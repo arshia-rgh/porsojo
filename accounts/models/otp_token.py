@@ -9,6 +9,17 @@ from accounts.validators import iranian_phone_number_validator
 
 
 class OtpToken(models.Model):
+    """This model represent token for otp authentication
+
+    Fields:
+        phone_number (CharField)
+        code (PositiveSmallIntegerField)
+        created (DateTimeField)
+    
+    Methods:
+        is_expire: if code expired return `True`
+        generate_code: generate random 4 digit code
+    """
     phone_number = models.CharField(
         _("phone number"),
         max_length=13,
