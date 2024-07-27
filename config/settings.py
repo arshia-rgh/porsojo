@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     # third-party apps
     "rest_framework",
     # local apps
+    "accounts.apps.AccountsConfig",
+    "categories.apps.CategoriesConfig",
+    "surveys.apps.SurveysConfig",
+    "analytics.apps.AnalyticsConfig",
 ]
 
 MIDDLEWARE = [
