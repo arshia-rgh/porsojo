@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
+from accounts.models.otp_token import OtpToken
 from accounts.models.user import User
 
 
@@ -30,3 +31,8 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
+
+
+@admin.register(OtpToken)
+class OtpTokenAdmin(admin.ModelAdmin):
+    pass
