@@ -16,7 +16,10 @@ class Folder(models.Model):
 
 
 class FolderItem(models.Model):
-    # object_id = 
+    """
+    
+    """
     folder = models.ForeignKey(Folder, on_delete=models.PROTECT, related_name='items')
     content_id = models.IntegerField()
+    object_id = models.IntegerField() 
     
