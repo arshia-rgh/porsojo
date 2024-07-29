@@ -15,15 +15,15 @@ class OtpToken(models.Model):
         phone_number (CharField)
         code (PositiveSmallIntegerField)
         created (DateTimeField)
-    
+
     Methods:
         is_expire: if code expired return `True`
         generate_code: generate random 4 digit code
     """
+
     phone_number = models.CharField(
         _("phone number"),
         max_length=13,
-        unique=True,
         validators=[iranian_phone_number_validator],
     )
     code = models.PositiveSmallIntegerField(_("code"))
