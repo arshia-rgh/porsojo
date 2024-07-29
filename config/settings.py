@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # third-party apps
     "rest_framework",
     "rest_framework_simplejwt",
+    "drf_spectacular",
     # local apps
     "accounts.apps.AccountsConfig",
     "categories.apps.CategoriesConfig",
@@ -144,4 +145,13 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Porsojo API Documentation",
+    "DESCRIPTION": "This is the documentation of the Porsojo Project, a system that provides surveys.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
 }
