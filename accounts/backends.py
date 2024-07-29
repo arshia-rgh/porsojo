@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
+from django.core import exceptions
 
 from accounts.models.otp_token import OtpToken
-from django.core import exceptions
 
 UserModel = get_user_model()
 
@@ -35,9 +35,7 @@ class OtpTokenAuthenticationBackend(ModelBackend):
                 otp_token = otp_tokens.last()
                 if not otp_token.is_expire:
                     try:
-                        user = UserModel.objects.get(
-                            phone_number=otp_token.phone_number
-                        )
+                        user = UserModel.objects.get(phone_number=otp_token.phone_number)
                         otp_token.delete()  # delete used otp token
                         return user
                     except UserModel.DoesNotExist:

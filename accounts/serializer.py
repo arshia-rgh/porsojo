@@ -30,23 +30,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class IranianPhoneNumberSerializer(serializers.Serializer):
-    phone_number = serializers.CharField(
-        max_length=13, validators=[iranian_phone_number_validator]
-    )
+    phone_number = serializers.CharField(max_length=13, validators=[iranian_phone_number_validator])
 
     @staticmethod
     def validate_phone_number(value):
         if not User.objects.filter(phone_number=value).exists():
-            raise serializers.ValidationError(
-                "User with this phone number does not exist."
-            )
+            raise serializers.ValidationError("User with this phone number does not exist.")
         return value
 
 
 class VerifyOtpTokenSerializer(serializers.Serializer):
-    phone_number = serializers.CharField(
-        max_length=13, validators=[iranian_phone_number_validator]
-    )
+    phone_number = serializers.CharField(max_length=13, validators=[iranian_phone_number_validator])
     otp_token = serializers.CharField(max_length=4)
 
     def validate(self, data):
