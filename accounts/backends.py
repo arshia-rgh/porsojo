@@ -38,6 +38,7 @@ class OtpTokenAuthenticationBackend(ModelBackend):
                         user = UserModel.objects.get(
                             phone_number=otp_token.phone_number
                         )
+                        otp_token.delete()  # delete used otp token
                         return user
                     except UserModel.DoesNotExist:
                         return None
