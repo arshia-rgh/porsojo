@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 from django.utils import timezone
@@ -135,6 +136,8 @@ AUTHENTICATION_BACKENDS = [
     "accounts.backends.EmailAuthenticationBackend",
     "accounts.backends.OtpTokenAuthenticationBackend",
 ]
+OTP_MAX_TRY = 5
+KAVENEGAR_API_TOKEN = os.environ.get("KAVENEGAR_API_TOKEN")
 
 # Rest framework settings
 REST_FRAMEWORK = {
