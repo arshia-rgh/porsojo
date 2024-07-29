@@ -14,7 +14,6 @@ class BaseOtpService(ABC):
     def verify_otp(self, phone_number: str, otp: str) -> bool:
         otp_token = self.otp_code_model_class.objects.filter(phone_number=phone_number).first()
         if otp_token and otp_token.code == int(otp) and not otp_token.is_expire:
-            otp_token.delete()
             return True
         return False
 
