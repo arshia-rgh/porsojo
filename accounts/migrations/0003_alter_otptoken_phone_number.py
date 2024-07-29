@@ -18,7 +18,8 @@ class Migration(migrations.Migration):
                 max_length=13,
                 validators=[
                     django.core.validators.RegexValidator(
-                        "^(09|\\+989)\\d{9}$", "Invalid Iranian phone number."
+                        "^(09|\\+989)\\d{9}$",
+                        "Invalid Iranian phone number.",
                     )
                 ],
                 verbose_name="phone number",
