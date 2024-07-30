@@ -1,5 +1,5 @@
 from django.test import TestCase
-from surveys.models import Form
+from surveys.models import Form, Process, ProcessForm
 from model_bakery import baker
 
 
@@ -16,3 +16,24 @@ class FormModelTest(TestCase):
         self.form1.is_public = False
         with self.assertRaises(ValueError):
             self.form1.save()
+
+
+class ProcessModelTest(TestCase):
+    def setUp(self):
+        self.process1 = baker.make(Process, password='default_password', is_public=True)
+        self.form1 = baker.make(Form, is_public=True)
+        self.form2 = baker.make(Form, password="test", is_public=False)
+
+    def test_process_model_save_method_with_private_form(self):
+
+        # Create ProcessForm instances to link forms to the process
+        ProcessForm.objects.create(process=self.process1, form=self.form1, priority_number=1)
+        ProcessForm.objects.create(process=self.process1, form=self.form2, priority_number=2)
+
+        # the process password should not be empty while it is private
+        self.process1.password = 'test'
+        # Save the process to trigger the save method logic
+        self.process1.save()
+
+        # Test if the process is private because it contains a private form
+        self.assertEqual(self.process1.is_public, False)

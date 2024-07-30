@@ -42,10 +42,13 @@ class Process(models.Model):
     is_linear = models.BooleanField()
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
         # If our process contains any private form the process should be private too
-        for form in self.forms.all():
-            if not form.is_public:
-                self.is_public = False
+        contains_private_form = any(not form.is_public for form in self.forms.all())
+
+        if contains_private_form:
+            self.is_public = False
 
         # if the process is public set the password to empty string
         if self.is_public:
