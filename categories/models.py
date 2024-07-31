@@ -30,6 +30,6 @@ class FolderItem(models.Model):
         More info: https://docs.djangoproject.com/en/5.0/ref/contrib/contenttypes/
     """
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='items')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to={'model__in': ('folder', )})
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to={'model__in': ('form', 'process')})
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
