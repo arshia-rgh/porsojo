@@ -60,3 +60,19 @@ class VerifyOtpTokenSerializer(serializers.Serializer):
         if not OtpToken.objects.filter(code=data["otp_token"], phone_number=data["phone_number"]).exists():
             raise serializers.ValidationError("Invalid OTP token.")
         return data
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "phone_number",
+            "email",
+        )
+        extra_kwargs = {
+            "id": {"read_only": True},
+        }

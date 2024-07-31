@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import authenticate
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -10,7 +10,7 @@ from accounts.models import User
 from accounts.serializer import (
     IranianPhoneNumberSerializer,
     UserRegistrationSerializer,
-    VerifyOtpTokenSerializer,
+    VerifyOtpTokenSerializer, ProfileSerializer,
 )
 from accounts.tasks import send_otp
 from utils.otp_service import FakeOtpService, KavenegarOtpService
@@ -108,3 +108,20 @@ class VerifyOtpTokenView(generics.GenericAPIView):
                 return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"message": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
