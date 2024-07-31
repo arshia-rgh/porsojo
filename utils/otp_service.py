@@ -12,7 +12,7 @@ class BaseOtpService(ABC):
         pass
 
     def verify_otp(self, phone_number: str, otp: str) -> bool:
-        otp_token = self.otp_code_model_class.objects.filter(phone_number=phone_number).first()
+        otp_token = self.otp_code_model_class.objects.filter(phone_number=phone_number, code=otp).first()
         if otp_token and otp_token.code == int(otp) and not otp_token.is_expire:
             return True
         return False
