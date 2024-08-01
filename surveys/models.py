@@ -25,11 +25,20 @@ class Form(models.Model):
 
 
 class Question(models.Model):
+    QUESTION_TYPES = (
+        ("Text", "Text"),
+        ("Check_box", 'Check_box'),
+        ("Select", "Select"),
+    )
     form = models.ForeignKey(Form, models.CASCADE)
     text = models.CharField(max_length=255)
-    question_type = models.CharField(max_length=100)
+    question_type = models.CharField(max_length=100, choices=QUESTION_TYPES, default='Text')
     required = models.BooleanField(default=True)
     options = models.TextField()
+
+    @property
+    def separated_options(self):
+        return self.options.split(",")
 
 
 class Process(models.Model):
