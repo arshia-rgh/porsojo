@@ -113,14 +113,46 @@ class VerifyOtpTokenView(generics.GenericAPIView):
 
 
 class ProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating the authenticated user's profile.
+
+    This view handles the retrieval and updating of the authenticated user's profile.
+
+    Attributes:
+        serializer_class (ProfileSerializer): The serializer class for this view.
+        permission_classes (tuple): The permission classes for this view.
+        queryset (QuerySet): The queryset for this view.
+
+    Methods:
+        get_object() -> User: Returns the authenticated user.
+        update(request, *args, **kwargs) -> Response: Updates the authenticated user's profile.
+    """
+
     serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
     queryset = User.objects
 
     def get_object(self):
+        """
+        Returns the authenticated user.
+
+        Returns:
+            User: The authenticated user.
+        """
         return self.request.user
 
     def update(self, request, *args, **kwargs):
+        """
+        Updates the authenticated user's profile.
+
+        Args:
+            request (Request): The DRF request object.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: A response object containing the updated profile data.
+        """
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -130,13 +162,34 @@ class ProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
 
 class ChangePasswordView(generics.UpdateAPIView):
+    """
+    View for changing the user's password.
+
+    This view handles the changing of the user's password.
+    """
+
     serializer_class = PasswordChangeSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
+        """
+        Get the user object for the current request.
+
+        Returns:
+            User: The user object.
+        """
         return self.request.user
 
     def update(self, request, *args, **kwargs):
+        """
+        Change the user's password.
+
+        Args:
+            request (Request): The DRF request object.
+
+        Returns:
+            Response: A response object containing a success message.
+        """
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
