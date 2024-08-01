@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
+from accounts.models.otp_token import OtpToken
 from accounts.serializer import (
     IranianPhoneNumberSerializer,
     PasswordChangeSerializer,
@@ -15,6 +16,7 @@ from accounts.serializer import (
     VerifyOtpTokenSerializer,
 )
 from accounts.tasks import send_otp
+from utils.exceptions import TooManyOtpRequestsException
 from utils.otp_service import FakeOtpService, KavenegarOtpService
 
 
@@ -53,13 +55,9 @@ class SendOtpTokenView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         phone_number: str = serializer.validated_data["phone_number"]
-
-        if settings.DEBUG:
-            otp_service: FakeOtpService = FakeOtpService()
-        else:
-            otp_service: KavenegarOtpService = KavenegarOtpService(settings.KAVENEGAR_API_TOKEN)
-        send_otp(otp_service, phone_number)
-        return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
+        OtpToken.check_max_try(phone_number)
+        send_otp.delay(phone_number)
+        return Response({"message": "OTP sent successfully"}, status=status.HTTP_201_CREATED)
 
 
 class VerifyOtpTokenView(generics.GenericAPIView):

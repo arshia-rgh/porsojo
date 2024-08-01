@@ -1,7 +1,5 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
-from django.core import exceptions
 
 from accounts.models.otp_token import OtpToken
 
@@ -29,17 +27,13 @@ class OtpTokenAuthenticationBackend(ModelBackend):
 
         try:
             otp_tokens = OtpToken.objects.filter(code=token, phone_number=phone_number)
-            if otp_tokens.count() > settings.OTP_MAX_TRY:
-                raise exceptions.RequestAborted("Too many otp tokens sent, please try in 30 minutes later.")
-            else:
-                otp_token = otp_tokens.last()
-                if not otp_token.is_expire:
-                    try:
-                        user = UserModel.objects.get(phone_number=otp_token.phone_number)
-                        otp_token.delete()  # delete used otp token
-                        return user
-                    except UserModel.DoesNotExist:
-                        return None
-                return None
+            otp_token = otp_tokens.last()
+            if not otp_token.is_expire:
+                try:
+                    user = UserModel.objects.get(phone_number=otp_token.phone_number)
+                    return user
+                except UserModel.DoesNotExist:
+                    return None
+            return None
         except OtpToken.DoesNotExist:
             return None
