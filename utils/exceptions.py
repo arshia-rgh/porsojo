@@ -1,38 +1,26 @@
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+from rest_framework import status
+from rest_framework.exceptions import APIException
 
 
-class PorsojoException(Exception):
-    def __init__(self, code, message, status_code):
-        self.code = code
-        self.message = message
-        self.status_code = status_code
-
-    def __str__(self):
-        return self.message
+class PorsojoException(APIException):
+    pass
 
 
 class TooManyOtpRequestsException(PorsojoException):
-    def __init__(self):
-        super().__init__(
-            code="TOO_MANY_OTP_REQUESTS",
-            message=f"Too many otp tokens sent, please try in {settings.OTP_TOKEN_DELETE_DELAY_TEXT} minutes later.",
-            status_code=429,
-        )
+    default_detail = _(f"Too many requests. Please try {settings.OTP_TOKEN_DELETE_DELAY_TEXT} min later.")
+    default_code = "too_many_requests"
+    status_code = status.HTTP_429_TOO_MANY_REQUESTS
 
 
 class KavenegarAPIException(PorsojoException):
-    def __init__(self, message):
-        super().__init__(
-            code="KAVENEGAR_API_ERROR",
-            message=message,
-            status_code=500,
-        )
+    default_detail = _("Kavenegar API error")
+    default_code = "kavenegar_api_error"
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
 class KavenegarUnexpectedHTTPException(PorsojoException):
-    def __init__(self, message):
-        super().__init__(
-            code="KAVENEGAR_UNEXPECTED_HTTP_ERROR",
-            message=message,
-            status_code=500,
-        )
+    default_detail = _("Unexpected HTTP error")
+    default_code = "kavenegar_unexpected_http_error"
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR

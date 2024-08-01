@@ -23,17 +23,9 @@ class BaseOtpService(ABC):
             return True
         return False
 
-    def check_max_try(self, phone_number: str) -> bool:
-        otp_tokens = self.otp_code_model_class.objects.filter(phone_number=phone_number)
-        if otp_tokens.count() >= settings.OTP_MAX_TRY:
-            return True
-        return False
-
 
 class FakeOtpService(BaseOtpService):
     def send_otp(self, phone_number: str) -> None:
-        if self.check_max_try(phone_number):
-            raise TooManyOtpRequestsException
         otp_token = self.otp_code_model_class.objects.create(phone_number=phone_number, code=OtpToken.generate_code())
         print("--------------------------------")
         print(f"Send OTP to {phone_number}: {otp_token.code}")
@@ -45,8 +37,6 @@ class KavenegarOtpService(BaseOtpService):
         self.api = KavenegarAPI(api_key)
 
     def send_otp(self, phone_number: str) -> None:
-        if self.check_max_try(phone_number):
-            raise TooManyOtpRequestsException
         otp_token = self.otp_code_model_class.objects.create(phone_number=phone_number, code=OtpToken.generate_code())
         try:
             params = {
