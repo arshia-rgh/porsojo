@@ -76,3 +76,23 @@ class ProfileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "id": {"read_only": True},
         }
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=128)
+    password = serializers.CharField(max_length=128)
+    confirm_password = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = User
+
+    def validate(self, data):
+        if data["password"] != data["confirm_password"]:
+            raise serializers.ValidationError("The two password fields didn't match.")
+        return data
+
+    def validate_old_password(self, value):
+        user = self.context["request"].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("The old password is not correct.")
+        return value

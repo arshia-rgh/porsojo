@@ -9,8 +9,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.models import User
 from accounts.serializer import (
     IranianPhoneNumberSerializer,
+    PasswordChangeSerializer,
+    ProfileSerializer,
     UserRegistrationSerializer,
-    VerifyOtpTokenSerializer, ProfileSerializer,
+    VerifyOtpTokenSerializer,
 )
 from accounts.tasks import send_otp
 from utils.otp_service import FakeOtpService, KavenegarOtpService
@@ -119,9 +121,25 @@ class ProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = PasswordChangeSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.object.set_password(serializer.validated_data["password"])
+        self.object.save()
+        return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
