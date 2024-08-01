@@ -131,6 +131,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Authentication settings
 AUTH_USER_MODEL = "accounts.User"
 OTP_EXPIRE = timezone.timedelta(minutes=5)
+OTP_TOKEN_DELETE_DELAY = timezone.timedelta(minutes=10)
+OTP_TOKEN_DELETE_DELAY_TEXT = 10
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -161,3 +163,10 @@ CELERY_BROKER_URL = "amqp://localhost"
 CELERY_RESULT_BACKEND = "rpc://"
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_TIMEZONE = "Asia/Tehran"
+CELERY_ENABLE_UTC = True
+CELERY_TASK_SERIALIZER = "pickle"
+CELERY_RESULT_SERIALIZER = "pickle"
+CELERY_ACCEPT_CONTENT = ["json", "pickle"]
+CELERY_RESULT_EXPIRES = timezone.timedelta(days=1)
+CELERY_TASK_ALWAYS_EAGER = False
+CELERY_WORKER_PREFETCH_MULTIPLIER = 4
