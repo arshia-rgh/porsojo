@@ -26,4 +26,4 @@ class UserActivity(models.Model):
     content_object = GenericForeignKey()
 
     def __str__(self) -> str:
-        return f"{self.action_type} by {self.actor} on {self.action_time}"
+        return f"{self.action_type} by {self.user} on {self.action_time}"

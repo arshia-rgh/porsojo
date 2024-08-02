@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -10,6 +11,7 @@ from analytics.serializers import ReportSerializer
 
 from .models.activities import UserActivity
 from .serializers import UserActivitySerializer
+
 
 
 class UserActivityReadOnlyViewSet(ReadOnlyModelViewSet):
@@ -21,10 +23,12 @@ class UserActivityReadOnlyViewSet(ReadOnlyModelViewSet):
     serializer_class = UserActivitySerializer
 
 
-class ReportAPIView(generics.RetrieveAPIView):
+class ReportViewSet(viewsets.ModelViewSet):
     """
     A generic view for reading reports
     """
     queryset = Report.objects.all()
     serializer_class= ReportSerializer
-    permission_classes= IsAuthenticated
+    permission_classes= [IsAuthenticated]
+
+

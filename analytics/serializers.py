@@ -28,7 +28,6 @@ class ReportSerializer(serializers.ModelSerializer):
         model = Report
         fields = [
             "content_type",
-            "object_id"
+            "object_id",
             "generated_at",
-            "json_data",
         ]
