@@ -1,14 +1,9 @@
 from abc import ABC
 
-from django.conf import settings
 from kavenegar import APIException, HTTPException, KavenegarAPI
 
 from accounts.models.otp_token import OtpToken
-from utils.exceptions import (
-    KavenegarAPIException,
-    KavenegarUnexpectedHTTPException,
-    TooManyOtpRequestsException,
-)
+from utils.exceptions import KavenegarAPIException, KavenegarUnexpectedHTTPException
 
 
 class BaseOtpService(ABC):
