@@ -1,5 +1,6 @@
 from django.core.cache import cache
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Form
@@ -9,6 +10,7 @@ from .serializers import FormSerializer
 class FormViewSet(viewsets.ModelViewSet):
     queryset = Form.objects.all()
     serializer_class = FormSerializer
+    permission_classes = [IsAuthenticated]
 
     # Cacheing the list method (getting all objects)
     def list(self, request, *args, **kwargs):
