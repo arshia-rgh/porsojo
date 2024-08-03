@@ -6,8 +6,9 @@ from .models import Folder
 class FormSerializer(serializers.ModelSerializer):
     """
     serializer class for `Form` model.
-    
+
     """
+
     class Meta:
         model = Folder
-        fields = ['name', 'description']
+        fields = ['user', 'name', 'description']
