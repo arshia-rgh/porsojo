@@ -1,15 +1,10 @@
-from unittest.mock import patch
-
 from celery.contrib.testing.worker import start_worker
-from django.test import override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from accounts.models.otp_token import OtpToken
 from accounts.models.user import User
 from config.celery import app
-from utils.otp_service import FakeOtpService
 
 from .serializer import ProfileSerializer
 

@@ -16,8 +16,6 @@ from accounts.serializer import (
     VerifyOtpTokenSerializer,
 )
 from accounts.tasks import send_otp
-from utils import otp_service
-from utils.exceptions import TooManyOtpRequestsException
 from utils.otp_service import BaseOtpService, FakeOtpService, KavenegarOtpService
 
 
