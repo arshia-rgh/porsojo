@@ -1,6 +1,7 @@
 from django.db import models
 
 from accounts.models import User
+from analytics.models.activities import UserActivity
 
 
 class Form(models.Model):
@@ -12,6 +13,7 @@ class Form(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=100, blank=True)
 
+
     def save(self, *args, **kwargs):
 
         # if the form is public set the password to empty string
@@ -22,7 +24,25 @@ class Form(models.Model):
         elif not self.is_public and self.password == '':
             raise ValueError("Password cannot be empty for non-public forms")
         super().save(*args, **kwargs)
+    
+    @property
+    def view_count(self) -> int:
+        """
+        Counts the number of views for each instance
+        """
+        return UserActivity.count_api_READ_activities(
+            "form", #   must give model name as str
+            self.pk,
+        )
+    
+    @property
+    def response_count(self) -> int:
+        """
+        return number of responses given to the Process object
+        """
+        return Response.objects.filter(form=self).count()
 
+        
 
 class Question(models.Model):
     QUESTION_TYPES = (
@@ -67,7 +87,26 @@ class Process(models.Model):
         elif not self.is_public and self.password == '':
             raise ValueError("Password cannot be empty for non-public processes")
         super().save(*args, **kwargs)
-
+    
+    @property
+    def view_count(self) -> int:
+        """
+        Counts the number of views for each instance
+        """
+        return UserActivity.count_api_READ_activities(
+            "Process", #    must give model name as str
+            self.pk,
+        )
+    
+    @property
+    def response_count(self) -> int:
+        """
+        return number of responses given to the Process object
+        """
+        fc = ProcessForm.objects.filter(process=self).count()
+        resp_count = Response.objects.filter(process=self).count()
+        
+        return int(resp_count / fc) #devide responses per forms
 
 class ProcessForm(models.Model):
     process = models.ForeignKey(Process, on_delete=models.CASCADE)
@@ -76,7 +115,7 @@ class ProcessForm(models.Model):
 
 
 class Response(models.Model):
-    form = models.ForeignKey(Form, on_delete=models.CASCADE)
+    form = models.ForeignKey(Form, on_delete=models.CASCADE,)
     Process = models.OneToOneField(Process, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now=True)

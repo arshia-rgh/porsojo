@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from accounts.models.user import User
-from analytics.constants import ACTION_STATUS, ACTION_TYPES, SUCCESS
+from analytics.constants import ACTION_STATUS, ACTION_TYPES, SUCCESS, READ
 
 
 class UserActivity(models.Model):
@@ -27,3 +27,16 @@ class UserActivity(models.Model):
 
     def __str__(self) -> str:
         return f"{self.action_type} by {self.user} on {self.action_time}"
+    
+    @staticmethod
+    def count_api_READ_activities(content_name:str, object_id: int) -> int:
+        """
+        Method for counting given object's read activities
+            - content_name : name of the object model
+        """
+        ct = ContentType.objects.get(model=content_name)
+        return UserActivity.objects.filter(
+            content_type = ct,
+            object_id = object_id,
+            action_type = READ,
+            ).count()

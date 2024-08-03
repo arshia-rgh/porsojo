@@ -10,7 +10,7 @@ from .constants import LOGIN, LOGIN_FAILED
 @receiver(user_logged_in)
 def log_user_login(sender, request, user, **kwargs):
     message = f"{user.full_name} is logged in with ip:{get_client_ip(request)}"
-    UserActivity.objects.create(actor=user, action_type=LOGIN, remarks=message)
+    UserActivity.objects.create(user=user, action_type=LOGIN, remarks=message)
 
 
 @receiver(user_login_failed)

@@ -1,12 +1,15 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from analytics.views import UserActivityReadOnlyViewSet, ReportViewSet
+from analytics.views import UserActivityReadOnlyViewSet
 
 router = DefaultRouter()
-router.register(r"activities", UserActivityReadOnlyViewSet, basename="log")
-router.register(r"reports", ReportViewSet, basename="reports")
+router.register(r"activities", UserActivityReadOnlyViewSet, basename="activities")
 
 app_name = "analytics"
 
-urlpatterns = router.urls
+urlpatterns = [
+
+] 
+
+urlpatterns += router.urls

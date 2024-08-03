@@ -1,10 +1,6 @@
 from django.contrib import admin
-from analytics.models.activities import UserActivity
-from analytics.models.report import Report
 
-@admin.register(Report)
-class ReportAdmin(admin.ModelAdmin):
-    pass
+from analytics.models.activities import UserActivity
 
 
 class UserActivityAdmin(admin.ModelAdmin):
