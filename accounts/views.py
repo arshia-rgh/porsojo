@@ -16,8 +16,9 @@ from accounts.serializer import (
     VerifyOtpTokenSerializer,
 )
 from accounts.tasks import send_otp
+from utils import otp_service
 from utils.exceptions import TooManyOtpRequestsException
-from utils.otp_service import FakeOtpService, KavenegarOtpService
+from utils.otp_service import BaseOtpService, FakeOtpService, KavenegarOtpService
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -41,6 +42,18 @@ class SendOtpTokenView(generics.GenericAPIView):
     serializer_class = IranianPhoneNumberSerializer
     permission_classes = (AllowAny,)
 
+    def get_otp_service(self) -> BaseOtpService:
+        """
+        Returns the OTP service to use.
+
+        Returns:
+            BaseOtpService: The OTP service to use.
+        """
+
+        if settings.DEBUG:
+            return FakeOtpService()
+        return KavenegarOtpService(settings.KAVENEGAR_API_TOKEN)
+
     def post(self, request: Request, *args, **kwargs) -> Response:
         """
         Sends an OTP token to the provided phone number.
@@ -56,7 +69,7 @@ class SendOtpTokenView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         phone_number: str = serializer.validated_data["phone_number"]
         OtpToken.check_max_try(phone_number)
-        send_otp.delay(phone_number)
+        send_otp.delay(self.get_otp_service(), phone_number)
         return Response({"message": "OTP sent successfully"}, status=status.HTTP_201_CREATED)
 
 

@@ -11,4 +11,4 @@ from accounts.tasks import delete_otp_token
 def schedule_opt_token_deletion(sender, instance, created, **kwargs):
     if created:
         delete_time = timezone.now() + settings.OTP_TOKEN_DELETE_DELAY
-        delete_otp_token.apply_async(args=[instance.id], eta=delete_time)
+        delete_otp_token.apply_async(args=[instance], eta=delete_time)
