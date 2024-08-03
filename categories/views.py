@@ -1,32 +1,28 @@
-from django.shortcuts import render
-from rest_framework import generics
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 
-from .models import Folder, FolderItem
-from .serializers import FormSerializer
+from .models import Folder
+from .serializers import FolderSerializer
 
 
-# Implement Folder-CRUD-APIs methods.
+class FolderList(ListCreateAPIView):
+    """
+    Implements POST method for `Folder` class using `ListCreateAPIView`
+    from django rest-framework. It can also retrieves all Folder's objects.
 
-class FolderList(APIView):
+    """
 
-    def get(self, request):
-        queryset = Folder.objects.select_related('user').all()
-        serializer = FormSerializer(queryset, many = True)
+    serializer_class = FolderSerializer
+    queryset = Folder.objects.select_related('user').all()
 
-        return Response(serializer.data)
-    
 
-    def post(self, request):
-        folder = FormSerializer(data = request.data)
-        print(request.data)
-        if folder.is_valid():
-            print(folder.validated_data)
-            folder.save()
+class FolderDetail(RetrieveUpdateDestroyAPIView):
+    """
+    Implements DELETE, UPDATE, GET methods for a specific `Folder` object using `RetrieveUpdateDestroyAPIView`
+    from django rest-framework.
 
-        return Response(folder.data, status = status.HTTP_201_CREATED)
-
+    """
+        
+    serializer_class = FolderSerializer
+    queryset = Folder.objects.select_related('user').all()
 
