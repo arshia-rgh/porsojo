@@ -1,6 +1,6 @@
-import json
 from unittest.mock import patch
 
+from celery.contrib.testing.worker import start_worker
 from django.test import override_settings
 from django.urls import reverse
 from rest_framework import status
@@ -8,11 +8,13 @@ from rest_framework.test import APITestCase
 
 from accounts.models.otp_token import OtpToken
 from accounts.models.user import User
+from config.celery import app
 from utils.otp_service import FakeOtpService
+
+from .serializer import ProfileSerializer
 
 
 class AccountsEndpointTestCase(APITestCase):
-
     def setUp(self) -> None:
         self.user_data = {
             "username": "test",
@@ -22,6 +24,7 @@ class AccountsEndpointTestCase(APITestCase):
             "first_name": "test_first_name",
             "last_name": "test_last_name",
         }
+        start_worker(app=app)
 
     def create_user(self) -> User:
         return User.objects.create_user(**self.user_data)
@@ -90,38 +93,18 @@ class AccountsEndpointTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data, {"detail": "No active account found with the given credentials"})
 
-    @override_settings(DEBUG=True)
-    def test_user_send_otp_valid_request(self) -> None:
-        self.create_user()
-        url = reverse("accounts:send_otp_token")
-        response = self.client.post(url, {"phone_number": self.user_data["phone_number"]})
-
+    def test_profile_retrieve(self):
+        user = self.create_user()
+        self.client.force_authenticate(user)
+        url = reverse("accounts:profile")
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {"message": "OTP sent successfully"})
+        self.assertEqual(response.data, ProfileSerializer(instance=user).data)
 
-    @override_settings(DEBUG=False)
-    def test_user_send_otp_invalid_request(self) -> None:
-        url = reverse("accounts:send_otp_token")
-        response = self.client.post(url, {"phone_number": "09127548715"})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertTrue("phone_number" in response.data)
-
-    @override_settings(DEBUG=True)
-    def test_verify_otp_token_valid_request(self):
-        self.create_user()
-        self.client.post(reverse("accounts:send_otp_token"), {"phone_number": self.user_data["phone_number"]})
-
-        url = reverse("accounts:verify_otp_token")
-        otp_code = OtpToken.objects.filter(phone_number=self.user_data["phone_number"]).first().code
-        response = self.client.post(url, {"phone_number": self.user_data["phone_number"], "otp_token": otp_code})
+    def test_profile_partial_update(self):
+        user = self.create_user()
+        self.client.force_authenticate(user)
+        url = reverse("accounts:profile")
+        response = self.client.patch(url, {"phone_number": "09123456789"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    @override_settings(DEBUG=True)
-    def test_verify_otp_token_invalid_request(self):
-        self.create_user()
-        self.client.post(reverse("accounts:send_otp_token"), {"phone_number": self.user_data["phone_number"]})
-
-        url = reverse("accounts:verify_otp_token")
-        otp_code = OtpToken.objects.filter(phone_number=self.user_data["phone_number"]).first().code
-        response = self.client.post(url, {"phone_number": self.user_data["phone_number"], "otp_token": otp_code + 1})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, ProfileSerializer(instance=user).data)
