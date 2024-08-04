@@ -121,7 +121,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'forms': '1000/day',
+        'forms': '3/day',
         'uploads': '20/day'
     }
 }

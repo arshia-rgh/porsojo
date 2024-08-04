@@ -12,6 +12,7 @@ class FormViewSet(viewsets.ModelViewSet):
     serializer_class = FormSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    # override the get_throttle() method to add scope for each request methods
     def get_throttles(self):
         if self.request.method in ["POST", "PUT", "PATCH"]:
             self.throttle_scope = "uploads"
