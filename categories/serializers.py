@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Folder
+from .models import Folder, FolderItem
 
 
 class FolderSerializer(serializers.ModelSerializer):
@@ -11,4 +11,11 @@ class FolderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Folder
-        fields = ['user', 'name', 'description']
+        fields = ['id', 'user', 'name', 'description']
+
+
+class FolderItemSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FolderItem
+        fields = ['id', 'folder', 'content_type', 'object_id']
