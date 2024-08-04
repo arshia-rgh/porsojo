@@ -15,6 +15,10 @@ class FolderSerializer(serializers.ModelSerializer):
 
 
 class FolderItemSerializer(serializers.ModelSerializer):
+    """
+    serializer class for `FormItem` model.
+    It uses `FolderItem` class as its model and all of its fields as well.
+    """
 
     class Meta:
         model = FolderItem
