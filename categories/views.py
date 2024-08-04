@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Folder, FolderItem
 from .serializers import FolderSerializer, FolderItemSerializer
@@ -13,6 +14,7 @@ class FolderViewSet(ModelViewSet):
 
     serializer_class = FolderSerializer
     queryset = Folder.objects.select_related('user').all()
+    permission_classes = [IsAuthenticated]
 
 
 class FolderItemViewSet(ModelViewSet):
@@ -24,4 +26,4 @@ class FolderItemViewSet(ModelViewSet):
 
     serializer_class = FolderItemSerializer
     queryset = FolderItem.objects.all()
-        
+    permission_classes = [IsAuthenticated]
