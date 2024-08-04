@@ -31,21 +31,7 @@ class ThrottleMixin:
 
     def get_throttles(self):
         if self.request.method in ["POST", "PUT", "PATCH"]:
-            throttle_scope = "uploads"
+            self.throttle_scope = "uploads"
         else:
-            throttle_scope = "receives"
-
-        throttle = ScopedRateThrottle()
-        throttle.scope = throttle_scope
-        return [throttle]
-
-    def check_throttles(self, request):
-        """
-            check_throttles checking if the request should be throttled based on the defined throttling rule
-
-            if any of the throttles allow_request returns False:
-                - it calls throttled method to raise a throttling exception
-        """
-        for throttle in self.get_throttles():
-            if not throttle.allow_request(request, self):
-                self.throttled(request, throttle.wait())
+            self.throttle_scope = "receives"
+        return [ScopedRateThrottle()]
