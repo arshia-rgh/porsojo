@@ -34,7 +34,8 @@ class FormViewSet(viewsets.ModelViewSet):
 
 
 class ProcessFormViewSet(viewsets.ModelViewSet):
-    pass
+    queryset = ProcessForm.objects.all()
+    serializer_class = ...
 
 
 class ProcessViewSet(viewsets.ModelViewSet):
