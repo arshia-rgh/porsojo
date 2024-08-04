@@ -44,7 +44,7 @@ class OtpToken(models.Model):
     @classmethod
     def check_max_try(cls, phone_number: str):
         otp_tokens = cls.objects.filter(phone_number=phone_number)
-        if otp_tokens.count() >= settings.OTP_MAX_TRY:
+        if otp_tokens.count() > settings.OTP_MAX_TRY:
             raise TooManyOtpRequestsException
 
     @staticmethod

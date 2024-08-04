@@ -1,11 +1,25 @@
 from celery import shared_task
+from django.conf import settings
 
 from accounts.models.otp_token import OtpToken
-from utils.otp_service import BaseOtpService
+from utils.otp_service import BaseOtpService, FakeOtpService, KavenegarOtpService
+
+
+def get_otp_service() -> BaseOtpService:
+    """
+    Returns the OTP service to use.
+
+    Returns:
+        BaseOtpService: The OTP service to use.
+    """
+
+    if settings.DEBUG:
+        return FakeOtpService()
+    return KavenegarOtpService(settings.KAVENEGAR_API_TOKEN)
 
 
 @shared_task
-def send_otp(otp_service: BaseOtpService, phone_number: str) -> None:
+def send_otp(phone_number: str) -> None:
     """
     Sends an OTP token to the provided phone number asynchronously.
 
@@ -16,12 +30,12 @@ def send_otp(otp_service: BaseOtpService, phone_number: str) -> None:
     Returns:
         None
     """
-
+    otp_service = get_otp_service()
     otp_service.send_otp(phone_number)
 
 
 @shared_task
-def delete_otp_token(otp_token: OtpToken) -> None:
+def delete_otp_token(otp_token_id: int) -> None:
     """
     Deletes the given OTP token asynchronously.
 
@@ -32,4 +46,4 @@ def delete_otp_token(otp_token: OtpToken) -> None:
         None
     """
 
-    otp_token.delete()
+    OtpToken.objects.filter(id=otp_token_id).first().delete()

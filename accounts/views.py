@@ -40,18 +40,6 @@ class SendOtpTokenView(generics.GenericAPIView):
     serializer_class = IranianPhoneNumberSerializer
     permission_classes = (AllowAny,)
 
-    def get_otp_service(self) -> BaseOtpService:
-        """
-        Returns the OTP service to use.
-
-        Returns:
-            BaseOtpService: The OTP service to use.
-        """
-
-        if settings.DEBUG:
-            return FakeOtpService()
-        return KavenegarOtpService(settings.KAVENEGAR_API_TOKEN)
-
     def post(self, request: Request, *args, **kwargs) -> Response:
         """
         Sends an OTP token to the provided phone number.
@@ -67,7 +55,7 @@ class SendOtpTokenView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         phone_number: str = serializer.validated_data["phone_number"]
         OtpToken.check_max_try(phone_number)
-        send_otp.delay(self.get_otp_service(), phone_number)
+        send_otp.delay(phone_number)
         return Response({"message": "OTP sent successfully"}, status=status.HTTP_201_CREATED)
 
 
@@ -98,27 +86,16 @@ class VerifyOtpTokenView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         phone_number: str = serializer.validated_data["phone_number"]
         otp: str = serializer.validated_data["otp_token"]
-
-        if settings.DEBUG:
-            fake_otp_service: FakeOtpService = FakeOtpService()
-            is_verified: bool = fake_otp_service.verify_otp(phone_number, otp)
-        else:
-            kavenegar_otp_service: KavenegarOtpService = KavenegarOtpService(settings.KAVENEGAR_API_TOKEN)
-            is_verified: bool = kavenegar_otp_service.verify_otp(phone_number, otp)
-
-        if is_verified:
-            try:
-                user: User = authenticate(request, phone_number=phone_number, token=otp)
-                token: RefreshToken = RefreshToken.for_user(user)
-                data: dict[str, str] = {
-                    "refresh": str(token),
-                    "access": str(token.access_token),
-                }
-                return Response(data, status=status.HTTP_200_OK)
-            except User.DoesNotExist:
-                return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response({"message": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user: User = authenticate(request, phone_number=phone_number, token=otp)
+            token: RefreshToken = RefreshToken.for_user(user)
+            data: dict[str, str] = {
+                "refresh": str(token),
+                "access": str(token.access_token),
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
