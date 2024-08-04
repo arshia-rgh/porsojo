@@ -1,8 +1,11 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from .views import FolderList, FolderDetail
+from .views import FolderViewSet
+
+router = DefaultRouter()
+router.register('folders', FolderViewSet)
 
 urlpatterns = [
-    path('', FolderList.as_view(), name = 'folder_list'),
-    path('<int:pk>', FolderDetail.as_view(), name = 'folder_detail'),
+    path('', include(router.urls))
 ]
