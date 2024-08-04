@@ -15,27 +15,27 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Form',
+            name="Form",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('description', models.TextField()),
-                ('is_public', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('password', models.CharField(blank=True, max_length=100)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("title", models.CharField(max_length=100)),
+                ("description", models.TextField()),
+                ("is_public", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("password", models.CharField(blank=True, max_length=100)),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name='Question',
+            name="Question",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.CharField(max_length=255)),
-                ('question_type', models.CharField(max_length=100)),
-                ('required', models.BooleanField(default=True)),
-                ('options', models.TextField()),
-                ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='surveys.form')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("text", models.CharField(max_length=255)),
+                ("question_type", models.CharField(max_length=100)),
+                ("required", models.BooleanField(default=True)),
+                ("options", models.TextField()),
+                ("form", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="surveys.form")),
             ],
         ),
     ]

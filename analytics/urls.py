@@ -8,8 +8,6 @@ router.register(r"activities", UserActivityReadOnlyViewSet, basename="activities
 
 app_name = "analytics"
 
-urlpatterns = [
-
-] 
+urlpatterns = []
 
 urlpatterns += router.urls

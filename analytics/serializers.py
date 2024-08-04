@@ -7,6 +7,7 @@ class UserActivitySerializer(serializers.ModelSerializer):
     """
     Serializer for UserActivity Model instances
     """
+
     class Meta:
         model = UserActivity
         fields = [

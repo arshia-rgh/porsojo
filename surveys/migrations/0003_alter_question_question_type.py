@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('surveys', '0002_process_processform_process_forms_response_answer'),
+        ("surveys", "0002_process_processform_process_forms_response_answer"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='question',
-            name='question_type',
-            field=models.CharField(choices=[('Text', 'Text'), ('Check_box', 'Check_box'), ('Select', 'Select')], default='Text', max_length=100),
+            model_name="question",
+            name="question_type",
+            field=models.CharField(
+                choices=[("Text", "Text"), ("Check_box", "Check_box"), ("Select", "Select")],
+                default="Text",
+                max_length=100,
+            ),
         ),
     ]

@@ -14,7 +14,7 @@ class FormViewSet(viewsets.ModelViewSet):
 
     # Cacheing the list method (getting all objects)
     def list(self, request, *args, **kwargs):
-        cache_key = 'form_list'
+        cache_key = "form_list"
         cached_queryset = cache.get(cache_key)
 
         if not cached_queryset:
