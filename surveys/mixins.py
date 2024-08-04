@@ -4,6 +4,9 @@ from rest_framework.throttling import ScopedRateThrottle
 
 
 class CachedListMixin:
+    """
+    A cache mixin for handling all viewsets cacheing on the list method
+    """
     cache_key = None
     cache_timeout = 60 * 15
 
@@ -22,10 +25,27 @@ class CachedListMixin:
 
 
 class ThrottleMixin:
+    """
+        A throttle mixin for throttling all viewsets bt 2 scope (upload and receives)
+    """
+
     def get_throttles(self):
         if self.request.method in ["POST", "PUT", "PATCH"]:
-            self.throttle_scope = "uploads"
-
+            throttle_scope = "uploads"
         else:
-            self.throttle_scope = "receives"
-        return [ScopedRateThrottle]
+            throttle_scope = "receives"
+
+        throttle = ScopedRateThrottle()
+        throttle.scope = throttle_scope
+        return [throttle]
+
+    def check_throttles(self, request):
+        """
+            check_throttles checking if the request should be throttled based on the defined throttling rule
+
+            if any of the throttles allow_request returns False:
+                - it calls throttled method to raise a throttling exception
+        """
+        for throttle in self.get_throttles():
+            if not throttle.allow_request(request, self):
+                self.throttled(request, throttle.wait())
