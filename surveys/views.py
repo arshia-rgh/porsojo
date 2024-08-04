@@ -6,11 +6,14 @@ from rest_framework.throttling import ScopedRateThrottle
 from .models import Form, ProcessForm, Process
 from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer
 
+from .mixins import CachedListMixin
 
-class FormViewSet(viewsets.ModelViewSet):
+
+class FormViewSet(CachedListMixin, viewsets.ModelViewSet):
     queryset = Form.objects.all()
     serializer_class = FormSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    cache_key = "form_list"
 
     # override the get_throttle() method to add scope for each request methods
     def get_throttles(self):
@@ -33,10 +36,11 @@ class FormViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class ProcessFormViewSet(viewsets.ModelViewSet):
+class ProcessFormViewSet(CachedListMixin, viewsets.ModelViewSet):
     queryset = ProcessForm.objects.all()
     serializer_class = ProcessFormSerializer
     permission_classes = [IsAuthenticated]
+    cache_key = "process_form_list"
 
     def get_throttles(self):
         if self.request.method in ["POST", "PUT", "PATCH"]:
@@ -44,18 +48,6 @@ class ProcessFormViewSet(viewsets.ModelViewSet):
         else:
             self.throttle_scope = "forms"
         return [ScopedRateThrottle()]
-
-    # Cacheing the list method (getting all objects)
-    def list(self, request, *args, **kwargs):
-        cache_key = 'process_form_list'
-        cached_queryset = cache.get(cache_key)
-
-        if not cached_queryset:
-            cached_queryset = list(self.queryset)
-            cache.set(cache_key, cached_queryset, 60 * 15)  # Cache for 15 minutes
-
-        serializer = self.get_serializer(cached_queryset, many=True)
-        return Response(serializer.data)
 
 
 class ProcessViewSet(viewsets.ModelViewSet):
