@@ -58,7 +58,7 @@ class VerifyOtpTokenSerializer(serializers.Serializer):
 
     def validate(self, data):
         if not OtpToken.objects.filter(code=data["otp_token"], phone_number=data["phone_number"]).exists():
-            raise serializers.ValidationError("Invalid OTP token.")
+            raise serializers.ValidationError(detail={"otp_token": "Invalid OTP token."})
         return data
 
 
@@ -88,7 +88,7 @@ class PasswordChangeSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data["password"] != data["confirm_password"]:
-            raise serializers.ValidationError("The two password fields didn't match.")
+            raise serializers.ValidationError(detail={"password": "The two password fields didn't match."})
         return data
 
     def validate_old_password(self, value):
