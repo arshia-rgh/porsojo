@@ -10,13 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 from django.utils import timezone
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,7 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # third-party apps
     "rest_framework",
-    'django_extensions',
+    "rest_framework_simplejwt",
+    "drf_spectacular",
+    "django_extensions",
     # local apps
     "accounts.apps.AccountsConfig",
     "categories.apps.CategoriesConfig",
@@ -79,7 +80,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -96,7 +96,6 @@ CACHES = {
         'LOCATION': 'unique-snowflake',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -116,7 +115,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -127,7 +125,6 @@ TIME_ZONE = "Asia/Tehran"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -142,3 +139,39 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Authentication settings
 AUTH_USER_MODEL = "accounts.User"
 OTP_EXPIRE = timezone.timedelta(minutes=5)
+OTP_TOKEN_DELETE_DELAY = timezone.timedelta(minutes=10)
+OTP_TOKEN_DELETE_DELAY_TEXT = 10
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "accounts.backends.EmailAuthenticationBackend",
+    "accounts.backends.OtpTokenAuthenticationBackend",
+]
+OTP_MAX_TRY = 5
+KAVENEGAR_API_TOKEN = os.environ.get("KAVENEGAR_API_TOKEN")
+
+# Rest framework settings
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Porsojo API Documentation",
+    "DESCRIPTION": "This is the documentation of the Porsojo Project, a system that provides surveys.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
+}
+
+# Celery settings
+CELERY_BROKER_URL = "amqp://localhost"
+CELERY_RESULT_BACKEND = "rpc://"
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_TIMEZONE = "Asia/Tehran"
+CELERY_ENABLE_UTC = True
+CELERY_RESULT_EXPIRES = timezone.timedelta(days=1)
+CELERY_TASK_ALWAYS_EAGER = False
+CELERY_WORKER_PREFETCH_MULTIPLIER = 4
