@@ -13,28 +13,27 @@ class Form(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=100, blank=True)
 
-
     def save(self, *args, **kwargs):
 
         # if the form is public set the password to empty string
         if self.is_public:
-            self.password = ''
+            self.password = ""
 
         # if the form is private and the password is empty should raise an exception
-        elif not self.is_public and self.password == '':
+        elif not self.is_public and self.password == "":
             raise ValueError("Password cannot be empty for non-public forms")
         super().save(*args, **kwargs)
-    
+
     @property
     def view_count(self) -> int:
         """
         Counts the number of views for each instance
         """
         return UserActivity.count_api_READ_activities(
-            "form", #   must give model name as str
+            "form",  #   must give model name as str
             self.pk,
         )
-    
+
     @property
     def response_count(self) -> int:
         """
@@ -42,17 +41,16 @@ class Form(models.Model):
         """
         return Response.objects.filter(form=self).count()
 
-        
 
 class Question(models.Model):
     QUESTION_TYPES = (
         ("Text", "Text"),
-        ("Check_box", 'Check_box'),
+        ("Check_box", "Check_box"),
         ("Select", "Select"),
     )
     form = models.ForeignKey(Form, models.CASCADE)
     text = models.CharField(max_length=255)
-    question_type = models.CharField(max_length=100, choices=QUESTION_TYPES, default='Text')
+    question_type = models.CharField(max_length=100, choices=QUESTION_TYPES, default="Text")
     required = models.BooleanField(default=True)
     options = models.TextField()
 
@@ -62,7 +60,7 @@ class Question(models.Model):
 
 
 class Process(models.Model):
-    forms = models.ManyToManyField(Form, through='ProcessForm')
+    forms = models.ManyToManyField(Form, through="ProcessForm")
     title = models.CharField(max_length=100)
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -81,23 +79,23 @@ class Process(models.Model):
 
         # if the process is public set the password to empty string
         if self.is_public:
-            self.password = ''
+            self.password = ""
 
         # if the process is private and the password is empty should raise an exception
-        elif not self.is_public and self.password == '':
+        elif not self.is_public and self.password == "":
             raise ValueError("Password cannot be empty for non-public processes")
         super().save(*args, **kwargs)
-    
+
     @property
     def view_count(self) -> int:
         """
         Counts the number of views for each instance
         """
         return UserActivity.count_api_READ_activities(
-            "Process", #    must give model name as str
+            "Process",  #    must give model name as str
             self.pk,
         )
-    
+
     @property
     def response_count(self) -> int:
         """
@@ -105,8 +103,9 @@ class Process(models.Model):
         """
         fc = ProcessForm.objects.filter(process=self).count()
         resp_count = Response.objects.filter(process=self).count()
-        
-        return int(resp_count / fc) #devide responses per forms
+
+        return int(resp_count / fc)  # devide responses per forms
+
 
 class ProcessForm(models.Model):
     process = models.ForeignKey(Process, on_delete=models.CASCADE)
@@ -115,7 +114,10 @@ class ProcessForm(models.Model):
 
 
 class Response(models.Model):
-    form = models.ForeignKey(Form, on_delete=models.CASCADE,)
+    form = models.ForeignKey(
+        Form,
+        on_delete=models.CASCADE,
+    )
     Process = models.OneToOneField(Process, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now=True)

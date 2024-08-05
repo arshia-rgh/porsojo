@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from accounts.validators import iranian_phone_number_validator
+from utils.exceptions import TooManyOtpRequestsException
 
 
 class OtpToken(models.Model):
@@ -15,15 +16,15 @@ class OtpToken(models.Model):
         phone_number (CharField)
         code (PositiveSmallIntegerField)
         created (DateTimeField)
-    
+
     Methods:
         is_expire: if code expired return `True`
         generate_code: generate random 4 digit code
     """
+
     phone_number = models.CharField(
         _("phone number"),
         max_length=13,
-        unique=True,
         validators=[iranian_phone_number_validator],
     )
     code = models.PositiveSmallIntegerField(_("code"))
@@ -39,6 +40,12 @@ class OtpToken(models.Model):
         if now > expired:
             return True
         return False
+
+    @classmethod
+    def check_max_try(cls, phone_number: str):
+        otp_tokens = cls.objects.filter(phone_number=phone_number)
+        if otp_tokens.count() > settings.OTP_MAX_TRY:
+            raise TooManyOtpRequestsException
 
     @staticmethod
     def generate_code():

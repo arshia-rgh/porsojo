@@ -8,54 +8,54 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('surveys', '0001_initial'),
+        ("surveys", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Process',
+            name="Process",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('description', models.TextField()),
-                ('is_public', models.BooleanField(default=True)),
-                ('password', models.CharField(blank=True, max_length=100)),
-                ('is_linear', models.BooleanField()),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("title", models.CharField(max_length=100)),
+                ("description", models.TextField()),
+                ("is_public", models.BooleanField(default=True)),
+                ("password", models.CharField(blank=True, max_length=100)),
+                ("is_linear", models.BooleanField()),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name='ProcessForm',
+            name="ProcessForm",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('priority_number', models.IntegerField()),
-                ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='surveys.form')),
-                ('process', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='surveys.process')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("priority_number", models.IntegerField()),
+                ("form", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="surveys.form")),
+                ("process", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="surveys.process")),
             ],
         ),
         migrations.AddField(
-            model_name='process',
-            name='forms',
-            field=models.ManyToManyField(through='surveys.ProcessForm', to='surveys.form'),
+            model_name="process",
+            name="forms",
+            field=models.ManyToManyField(through="surveys.ProcessForm", to="surveys.form"),
         ),
         migrations.CreateModel(
-            name='Response',
+            name="Response",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('submitted_at', models.DateTimeField(auto_now=True)),
-                ('Process', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='surveys.process')),
-                ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='surveys.form')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("submitted_at", models.DateTimeField(auto_now=True)),
+                ("Process", models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to="surveys.process")),
+                ("form", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="surveys.form")),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name='Answer',
+            name="Answer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('answer_text', models.TextField()),
-                ('question', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='surveys.question')),
-                ('response', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='surveys.response')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("answer_text", models.TextField()),
+                ("question", models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to="surveys.question")),
+                ("response", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="surveys.response")),
             ],
         ),
     ]
