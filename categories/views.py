@@ -1,3 +1,16 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
 
-# Create your views here.
+from .models import Folder
+from .serializers import FolderSerializer
+
+
+class FolderViewSet(ModelViewSet):
+    """
+    Implements CURD methods for `Folder` class using `ModelViewSet`
+    from django rest-framework.
+
+    """
+
+    serializer_class = FolderSerializer
+    queryset = Folder.objects.select_related('user').all()
+        
