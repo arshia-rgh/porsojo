@@ -7,6 +7,7 @@ class CachedListMixin:
     """
     A cache mixin for handling all viewsets cacheing on the list method
     """
+
     cache_key = None
     cache_timeout = 60 * 15
 
@@ -26,7 +27,7 @@ class CachedListMixin:
 
 class ThrottleMixin:
     """
-        A throttle mixin for throttling all viewsets bt 2 scope (upload and receives)
+    A throttle mixin for throttling all viewsets bt 2 scope (upload and receives)
     """
 
     def get_throttles(self):

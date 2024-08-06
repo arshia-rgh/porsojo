@@ -156,14 +156,10 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.ScopedRateThrottle',
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
     ],
-    'DEFAULT_THROTTLE_RATES': {
-        'receives': '1000/day',
-        'uploads': '20/day'
-    }
+    "DEFAULT_THROTTLE_RATES": {"receives": "1000/day", "uploads": "20/day"},
 }
 
 SPECTACULAR_SETTINGS = {

@@ -23,13 +23,13 @@ class FormViewSetTest(APITestCase):
     @skip
     def test_throttling(self):
         """
-            Test the throttling mechanism for the FormViewSet.
+        Test the throttling mechanism for the FormViewSet.
 
-            This test will be skipped. To run this test, ensure the throttle rates are set to 5  in the settings.
+        This test will be skipped. To run this test, ensure the throttle rates are set to 5  in the settings.
 
-            Steps: 1. Send 5 requests to the form-list endpoint and verify each response has a status code of 200. 2.
-            Send a 6th request to the form-list endpoint and verify the response has a status code of 429 (Too Many
-            Requests).
+        Steps: 1. Send 5 requests to the form-list endpoint and verify each response has a status code of 200. 2.
+        Send a 6th request to the form-list endpoint and verify the response has a status code of 429 (Too Many
+        Requests).
         """
         for _ in range(5):
             response = self.client.get(reverse("surveys:form-list"))
@@ -39,20 +39,26 @@ class FormViewSetTest(APITestCase):
         self.assertEqual(response.status_code, 429)
 
         for _ in range(5):
-            response = self.client.post(reverse("surveys:form-list"), data={
+            response = self.client.post(
+                reverse("surveys:form-list"),
+                data={
+                    "title": "Test Form",
+                    "description": "test description",
+                    "password": "test password",
+                    "user": self.user1.id,
+                },
+            )
+            self.assertEqual(response.status_code, 201)
+
+        response = self.client.post(
+            reverse("surveys:form-list"),
+            data={
                 "title": "Test Form",
                 "description": "test description",
                 "password": "test password",
-                "user": self.user1.id
-            })
-            self.assertEqual(response.status_code, 201)
-
-        response = self.client.post(reverse("surveys:form-list"), data={
-            "title": "Test Form",
-            "description": "test description",
-            "password": "test password",
-            "user": self.user1.id,
-        })
+                "user": self.user1.id,
+            },
+        )
         self.assertEqual(response.status_code, 429)
 
     def test_get_with_pk(self):

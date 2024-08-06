@@ -13,7 +13,7 @@ class FolderViewSet(ModelViewSet):
     """
 
     serializer_class = FolderSerializer
-    queryset = Folder.objects.select_related('user').all()
+    queryset = Folder.objects.select_related("user").all()
     permission_classes = [IsAuthenticated]
 
 
