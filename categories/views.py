@@ -14,7 +14,14 @@ class FolderViewSet(ModelViewSet):
 
     serializer_class = FolderSerializer
     queryset = Folder.objects.select_related('user').all()
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        user_id = self.request.user.id
+
+        return {
+            'user_id': user_id
+        }
 
 
 class FolderItemViewSet(ModelViewSet):
