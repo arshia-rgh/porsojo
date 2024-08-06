@@ -12,6 +12,12 @@ class FormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     cache_key = "form_list"
 
+    # ensure the view passes the request to the serializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
+
 
 class ProcessFormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
     queryset = ProcessForm.objects.all()
@@ -25,3 +31,9 @@ class ProcessViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
     serializer_class = ProcessSerializer
     permission_classes = [IsAuthenticated]
     cache_key = "process_list"
+
+    # ensure the view passes the request to the serializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
