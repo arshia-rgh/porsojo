@@ -1,25 +1,39 @@
-from django.core.cache import cache
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from analytics.mixins import UserActivityMixin
-from .models import Form
-from .serializers import FormSerializer
+from .mixins import CachedListMixin, ThrottleMixin
+from .models import Form, ProcessForm, Process
+from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer
 
 
-class FormViewSet(UserActivityMixin, viewsets.ModelViewSet):
+class FormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
     queryset = Form.objects.all()
     serializer_class = FormSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    cache_key = "form_list"
 
-    # Cacheing the list method (getting all objects)
-    def list(self, request, *args, **kwargs):
-        cache_key = "form_list"
-        cached_queryset = cache.get(cache_key)
+    # ensure the view passes the request to the serializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
 
-        if not cached_queryset:
-            cached_queryset = list(self.queryset)
-            cache.set(cache_key, cached_queryset, 60 * 15)  # Cache for 15 minutes
 
-        serializer = self.get_serializer(cached_queryset, many=True)
-        return Response(serializer.data)
+class ProcessFormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
+    queryset = ProcessForm.objects.all()
+    serializer_class = ProcessFormSerializer
+    permission_classes = [IsAuthenticated]
+    cache_key = "process_form_list"
+
+
+class ProcessViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
+    queryset = Process.objects.all()
+    serializer_class = ProcessSerializer
+    permission_classes = [IsAuthenticated]
+    cache_key = "process_list"
+
+    # ensure the view passes the request to the serializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
