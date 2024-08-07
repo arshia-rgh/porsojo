@@ -2,12 +2,12 @@ from django.core.cache import cache
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-
+from analytics.mixins import UserActivityMixin
 from .models import Form
 from .serializers import FormSerializer
 
 
-class FormViewSet(viewsets.ModelViewSet):
+class FormViewSet(UserActivityMixin, viewsets.ModelViewSet):
     queryset = Form.objects.all()
     serializer_class = FormSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
