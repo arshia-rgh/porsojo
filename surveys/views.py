@@ -2,8 +2,8 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 from .mixins import CachedListMixin, ThrottleMixin
-from .models import Form, ProcessForm, Process
-from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer
+from .models import Form, ProcessForm, Process, Question
+from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer, QuestionSerializer
 
 
 class FormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
@@ -37,3 +37,10 @@ class ProcessViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context["request"] = self.request
         return context
+
+
+class QuestionViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
+    cache_key = "question_list"
