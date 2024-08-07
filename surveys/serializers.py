@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Form, ProcessForm, Process
+from .models import Form, ProcessForm, Process, Question
 
 
 class FormSerializer(serializers.ModelSerializer):
@@ -33,3 +33,9 @@ class ProcessSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         validated_data["user"] = request.user
         return super().create(validated_data)
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = "__all__"
