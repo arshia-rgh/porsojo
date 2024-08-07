@@ -118,7 +118,7 @@ class Response(models.Model):
         Form,
         on_delete=models.CASCADE,
     )
-    Process = models.OneToOneField(Process, on_delete=models.CASCADE)
+    process = models.ForeignKey(Process, on_delete=models.CASCADE, default=None)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now=True)
 

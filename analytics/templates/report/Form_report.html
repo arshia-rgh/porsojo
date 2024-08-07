@@ -49,6 +49,7 @@
                     document.querySelector('#form-view-count').innerHTML = (data.views);
                     break;
                 case "response_add":
+                    response_data = JSON.parse(data.response)
                     response = `<p>resp<br>${data.response}</p>`;
                     document.querySelector('#form-responses').innerHTML += response;
                     break;

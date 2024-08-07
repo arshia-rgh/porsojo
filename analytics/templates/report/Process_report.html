@@ -43,11 +43,11 @@
             
             switch (data.type) {
                 case "view":
-                    
                     document.querySelector('#process-view-count').innerHTML = (data.views);
                     break;
                 case "response_add":
-                    response = `<p>resp<br>${data.response}</p>`;
+                    response_data = JSON.parse(data.response)
+                    response = `<p>resp<br>${response_data}</p>`;
                     document.querySelector('#process-responses').innerHTML += response;
                     break;
                 case "response_count":
@@ -63,8 +63,5 @@
             console.error('Chat socket closed unexpectedly');
         };
     </script>
-
-
-
 </body>
 

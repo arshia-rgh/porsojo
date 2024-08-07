@@ -63,7 +63,9 @@ class UserActivityMixin:
                 "remarks": self.get_log_message(request),
             }
             try:
-                data["content_type"] = ContentType.objects.get_for_model(self.get_queryset().model)
+                data["content_type"] = ContentType.objects.get_for_model(
+                    self.get_queryset().model
+                )
                 data["content_object"] = self.get_object()
             except (AttributeError, ValidationError):
                 data["content_type"] = None

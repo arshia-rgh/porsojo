@@ -1,1 +1,1 @@
-default_app_config = 'Analytics.apps.AnalyticsConfig'
+default_app_config = "Analytics.apps.AnalyticsConfig"
