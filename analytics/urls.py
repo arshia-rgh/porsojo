@@ -11,12 +11,8 @@ app_name = "analytics"
 
 urlpatterns = [
     path("reports/", ReportDashboardView.as_view(), name="reports"),
-    path("report/form/<int:pk>", ReportFormView.as_view(), name="report_form"),
-    path(
-        "report/process/<int:pk>",
-        ReportProcessView.as_view(),
-        name="report_process",
-    ),
+    path("report/form/<int:pk>/", ReportFormView.as_view(), name="report_form"),
+    path("report/process/<int:pk>/",ReportProcessView.as_view(),name="report_process"),
 ]
 
 urlpatterns += router.urls

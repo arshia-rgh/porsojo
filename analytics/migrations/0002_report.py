@@ -29,16 +29,12 @@ class Migration(migrations.Migration):
                 ("object_id", models.PositiveIntegerField()),
                 (
                     "generated_at",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="date report was generated"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="date report was generated"),
                 ),
                 (
                     "content_type",
                     models.ForeignKey(
-                        limit_choices_to={
-                            "model__in": [surveys.models.Form, surveys.models.Process]
-                        },
+                        limit_choices_to={"model__in": [surveys.models.Form, surveys.models.Process]},
                         on_delete=django.db.models.deletion.CASCADE,
                         to="contenttypes.contenttype",
                     ),

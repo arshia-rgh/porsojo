@@ -92,7 +92,7 @@ class Process(models.Model):
         Counts the number of views for each instance
         """
         return UserActivity.count_api_READ_activities(
-            "Process",  #    must give model name as str
+            "process",  #    must give model name as str
             self.pk,
         )
 
@@ -103,8 +103,10 @@ class Process(models.Model):
         """
         fc = ProcessForm.objects.filter(process=self).count()
         resp_count = Response.objects.filter(process=self).count()
-
-        return int(resp_count / fc)  # devide responses per forms
+        if fc == 0 :
+            return 0
+        else:
+            return int(resp_count / fc)  # devide responses per forms
 
 
 class ProcessForm(models.Model):

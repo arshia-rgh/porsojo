@@ -27,7 +27,7 @@ def log_user_login_failed(sender, credentials, request, **kwargs):
 @receiver(post_save, sender=UserActivity)
 def sync_report_details(sender, instance, **kwrgs):
     """
-    Use django channels to sync all of our reports view counts.
+    Use django channels to sync all of our reports details.
     """
 
     model_class = instance.content_type.model_class()
@@ -35,18 +35,13 @@ def sync_report_details(sender, instance, **kwrgs):
     channel_layer = get_channel_layer()
 
     #   Only check successful activites
+
     successful = True if instance.status == SUCCESS else False
 
-    #   check if anyone has viewed any Process or form.
+    #   check if anyone has viewed any particular Process or form.
     #   if yes ==> update it in our report channel layer.
-    if (
-        successful
-        and (instance.action_type == READ)
-        and (model_class in [Form, Process])
-    ):
-        views = UserActivity.count_api_READ_activities(
-            model_name, object_id=instance.object_id
-        )
+    if successful and instance.action_type == READ and (model_class in [Form, Process]) and instance.content_object:
+        views = UserActivity.count_api_READ_activities(model_name, object_id=instance.object_id)
         async_to_sync(channel_layer.group_send)(
             f"{model_name}_{instance.object_id}",  #   channel_group_name
             {"type": "on.view", "views": views},
@@ -64,6 +59,7 @@ def sync_report_details(sender, instance, **kwrgs):
             f"form_{response.form.id}",  #   channel_group_name
             {"type": "on.reponse_count", "response_count": response_count},
         )
+
         #   connected to ReportProcessConsumer on_response_count
         async_to_sync(channel_layer.group_send)(
             f"process_{response.form.id}",  #   channel_group_name

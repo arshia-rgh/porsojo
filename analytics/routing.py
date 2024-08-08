@@ -4,11 +4,7 @@ from . import consumers
 
 websocket_urlpatterns = [
     re_path(
-        r"analytics/report/form/(?P<form_id>\d+)/$",
-        consumers.ReportFormConsumer.as_asgi(),
-    ),
-    re_path(
-        r"analytics/report/process/(?P<form_id>\d+)/$",
-        consumers.ReportProcessConsumer.as_asgi(),
-    ),
+        r"analytics/report/(?P<content>\w+)/(?P<id>\d+)/$",
+        consumers.ReportConsumer.as_asgi(),
+    )
 ]

@@ -20,9 +20,7 @@ class UserActivity(models.Model):
     data = models.JSONField(default=dict)
 
     # for generic relations
-    content_type = models.ForeignKey(
-        ContentType, models.SET_NULL, blank=True, null=True
-    )
+    content_type = models.ForeignKey(ContentType, models.SET_NULL, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey()
 

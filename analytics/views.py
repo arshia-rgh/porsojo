@@ -22,13 +22,22 @@ class UserActivityReadOnlyViewSet(UserActivityMixin, ReadOnlyModelViewSet):
 
 
 class ReportDashboardView(LoginRequiredMixin, TemplateView):
+    """
+    Reports dashboard holds an endpoints to all form and process reports a user has.
+    Except for admin, each User has only access to their own contents' reports.
+    """
+
     template_name = "report/dashboard.html"
     login_url = "accounts:login_with_username_and_email"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["forms"] = Form.objects.filter(user=self.request.user)
-        context["processes"] = Process.objects.filter(user=self.request.user)
+        if self.is_admin:
+            context["forms"] = Form.objects.all()
+            context["processes"] = Process.objects.all()
+        else:
+            context["forms"] = Form.objects.filter(user=self.request.user)
+            context["processes"] = Process.objects.filter(user=self.request.user)
         return context
 
 

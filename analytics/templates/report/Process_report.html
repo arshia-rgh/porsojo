@@ -20,6 +20,9 @@
         Response counts:
         <p id="process-response-count" cols="100" rows="20">{{process.response_count}}</p><br>
     </div>
+    <div>
+        {{process.forms}}
+    </div>
     <div id="process-responses" cols="100" rows="20">
         {% for response in responses %}
         <p>{{response}}</p>

@@ -7,10 +7,19 @@
 <body style="text-align:center;width:100svw;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:start;">
     
     <div class="search-bar" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
-        What Report would you like to See?<br>
-        <input id="form-id-input" type="text" size="50"><br>
-        <input id="form-id-submit" type="button" value="Enter">
+        <p>What Report would you like to See?<br><p>
+        <div>
+            <p> Search for Form</p>
+            <input id="form-id-input" type="text" size="30"><br>
+            <input id="form-id-submit" type="button" value="Enter">
+        </div>
+        <div>
+            <p> Search for Process</P>
+            <input id="process-id-input" type="text" size="30"><br>
+            <input id="process-id-submit" type="button" value="Enter">
+        </div>
     </div>
+    
     <p style="background-color:orange;padding :1%;">Your forms and processes</p>
     <div class="lists" style="padding :1%;display:flex;flex-direction:row;justify_content:center; align-content:stretch">
         
@@ -39,7 +48,11 @@
 
         document.querySelector('#form-id-submit').onclick = function(e) {
             var formId = document.querySelector('#form-id-input').value;
-            window.location.pathname = 'analytics/report/form/' + formId + '/';
+            window.location.pathname = 'analytics/report/form/' + formId;
+        };
+        document.querySelector('#process-id-submit').onclick = function(e) {
+            var processId = document.querySelector('#process-id-input').value;
+            window.location.pathname = 'analytics/report/process/' + processId ;
         };
     </script>
 </body>
