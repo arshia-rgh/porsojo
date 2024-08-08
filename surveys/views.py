@@ -2,8 +2,8 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 from .mixins import CachedListMixin, ThrottleMixin
-from .models import Form, ProcessForm, Process
-from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer
+from .models import Form, ProcessForm, Process, Response
+from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer, ResponseSerializer
 
 
 class FormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
@@ -33,6 +33,18 @@ class ProcessViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
     cache_key = "process_list"
 
     # ensure the view passes the request to the serializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
+    
+
+class ResponseViewSet(viewsets.ModelViewSet):
+    queryset = Response.objects.all()
+    serializer_class = ResponseSerializer
+    permission_classes = [IsAuthenticated]
+
+    # send request to serializer in order to get authenticated user
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["request"] = self.request
