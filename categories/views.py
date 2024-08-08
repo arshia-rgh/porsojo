@@ -17,10 +17,10 @@ class FolderViewSet(ModelViewSet):
     # permission_classes = [IsAuthenticated]
 
     def get_serializer_context(self):
-        user_id = self.request.user.id
-
+        user = self.request.user
+        print('\n\n', user, '\n\n')
         return {
-            'user_id': user_id
+            'user_id': user
         }
 
 
