@@ -24,4 +24,4 @@ class FolderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FolderItem
-        fields = ['id', 'folder', 'content_type', 'object_id']
+        fields = ["id", "folder", "content_type", "object_id"]
