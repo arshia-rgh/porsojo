@@ -16,6 +16,9 @@ class FolderViewSet(ModelViewSet):
     queryset = Folder.objects.select_related("user").all()
     permission_classes = [IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(user = self.request.user)
+
 
 class FolderItemViewSet(ModelViewSet):
     """
