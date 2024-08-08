@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 from .models import Folder, FolderItem
 
 
@@ -11,7 +12,8 @@ class FolderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Folder
-        fields = ["id", "user", "name", "description"]
+        fields = ['id', 'user', 'name', 'description']
+        read_only_fields = ['user']
 
 
 class FolderItemSerializer(serializers.ModelSerializer):
