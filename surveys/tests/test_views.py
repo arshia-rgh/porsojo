@@ -9,7 +9,7 @@ from accounts.models import User
 from surveys.models import Form, ProcessForm, Process, Question
 
 
-class BaseViewSetTest(object):
+class BaseViewSetTest:
     view_name = None
     model = None
 
