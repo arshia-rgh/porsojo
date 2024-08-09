@@ -33,7 +33,7 @@ class BaseViewSetTest(APITestCase):
         self.assertEqual(len(response.json()), 2)
 
     def test_post_create(self):
-        raise NotImplementedError('test_post_create must be implemented')
+        raise NotImplementedError("test_post_create must be implemented")
 
     def test_list_cache(self):
         response = self.client.get(reverse(f"surveys:{self.view_name}-list"))
@@ -96,13 +96,14 @@ class FormViewSetTest(BaseViewSetTest):
         self.assertEqual(response.status_code, 429)
 
     def test_post_create(self):
-        response = self.client.post(reverse("surveys:form-list"),
-                                    data={
-                                        "title": "Test Form  Unique",
-                                        "description": "test description",
-                                        "password": "test password",
-                                    }
-                                    )
+        response = self.client.post(
+            reverse("surveys:form-list"),
+            data={
+                "title": "Test Form  Unique",
+                "description": "test description",
+                "password": "test password",
+            },
+        )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Form.objects.get(title="Test Form  Unique").exists())
 
@@ -112,13 +113,9 @@ class ProcessFormViewSetTest(BaseViewSetTest):
     model = ProcessForm
 
     def test_post_create(self):
-        response = self.client.post(reverse("surveys:processform-list"),
-                                    data={
-                                        "process": baker.make(Process),
-                                        "form": baker.make(Form),
-                                        "priority_number": 2
-                                    }
-
-                                    )
+        response = self.client.post(
+            reverse("surveys:processform-list"),
+            data={"process": baker.make(Process), "form": baker.make(Form), "priority_number": 2},
+        )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(ProcessForm.objects.all().exists())
