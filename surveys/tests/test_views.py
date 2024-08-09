@@ -81,7 +81,6 @@ class FormViewSetTest(BaseViewSetTest):
                     "title": "Test Form",
                     "description": "test description",
                     "password": "test password",
-                    "user": self.user1.id,
                 },
             )
             self.assertEqual(response.status_code, 201)
@@ -92,7 +91,17 @@ class FormViewSetTest(BaseViewSetTest):
                 "title": "Test Form",
                 "description": "test description",
                 "password": "test password",
-                "user": self.user1.id,
             },
         )
         self.assertEqual(response.status_code, 429)
+
+    def test_post_create(self):
+        response = self.client.post(reverse("surveys:form-list"),
+                                    data={
+                                        "title": "Test Form  Unique",
+                                        "description": "test description",
+                                        "password": "test password",
+                                    }
+                                    )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Form.objects.get(title="Test Form  Unique").exists())
