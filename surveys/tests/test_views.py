@@ -105,7 +105,7 @@ class FormViewSetTest(BaseViewSetTest):
             },
         )
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(Form.objects.get(title="Test Form  Unique").exists())
+        self.assertTrue(Form.objects.get(title="Test Form  Unique"))
 
 
 class ProcessFormViewSetTest(BaseViewSetTest):
