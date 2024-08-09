@@ -119,3 +119,22 @@ class ProcessFormViewSetTest(BaseViewSetTest):
         )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(ProcessForm.objects.all().exists())
+
+
+class ProcessViewSetTest(BaseViewSetTest):
+    view_name = "process"
+    model = Process
+
+    def test_post_create(self):
+        response = self.client.post(
+            reverse("surveys:process-list"),
+            data={
+                "forms": baker.make(Form),
+                "title": "Test Title",
+                "description": "Test description",
+                "is_linear": False,
+            }
+
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Process.objects.all().exists())
