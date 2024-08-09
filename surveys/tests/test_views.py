@@ -107,7 +107,7 @@ class FormViewSetTest(BaseViewSetTest, APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Form.objects.get(title="Test Form  Unique"))
 
-@skip
+
 class ProcessFormViewSetTest(BaseViewSetTest, APITestCase):
     view_name = "processform"
     model = ProcessForm
@@ -115,7 +115,11 @@ class ProcessFormViewSetTest(BaseViewSetTest, APITestCase):
     def test_post_create(self):
         response = self.client.post(
             reverse("surveys:processform-list"),
-            data={"process": baker.make(Process), "form": baker.make(Form, is_public=True, password="Test password"), "priority_number": 2},
+            data={
+                "process": baker.make(Process).id,
+                "form": baker.make(Form, is_public=True, password="Test password").id,
+                "priority_number": 2,
+            },
         )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(ProcessForm.objects.all().exists())
@@ -147,7 +151,11 @@ class QuestionViewSetTest(BaseViewSetTest, APITestCase):
     def test_post_create(self):
         response = self.client.post(
             reverse("surveys:question-list"),
-            data={"form": baker.make(Form, is_public=True, password="Test password").id, "text": "Test text", "options": "Test options"},
+            data={
+                "form": baker.make(Form, is_public=True, password="Test password").id,
+                "text": "Test text",
+                "options": "Test options",
+            },
         )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Question.objects.all().exists())
