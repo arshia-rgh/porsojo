@@ -1,11 +1,12 @@
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 
+from surveys.mixins import CachedListMixin
 from .models import Folder, FolderItem
 from .serializers import FolderSerializer, FolderItemSerializer
 
 
-class FolderViewSet(ModelViewSet):
+class FolderViewSet(CachedListMixin, ModelViewSet):
     """
     Implements CURD methods for `Folder` class using `ModelViewSet`
     from django rest-framework.
@@ -15,12 +16,13 @@ class FolderViewSet(ModelViewSet):
     serializer_class = FolderSerializer
     queryset = Folder.objects.select_related("user").all()
     permission_classes = [IsAuthenticated]
+    cache_key = "folder_list"
 
     def perform_create(self, serializer):
         serializer.save(user = self.request.user)
 
 
-class FolderItemViewSet(ModelViewSet):
+class FolderItemViewSet(CachedListMixin, ModelViewSet):
     """
     Implements CURD methods for `FolderItem` class using `ModelViewSet`
     from django rest-framework.
@@ -30,3 +32,4 @@ class FolderItemViewSet(ModelViewSet):
     serializer_class = FolderItemSerializer
     queryset = FolderItem.objects.all()
     permission_classes = [IsAuthenticated]
+    cache_key = "folderitem_list"
