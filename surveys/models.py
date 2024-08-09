@@ -84,7 +84,6 @@ class Process(models.Model):
         # if the process is private and the password is empty should raise an exception
         elif not self.is_public and self.password == "":
             raise ValueError("Password cannot be empty for non-public processes")
-        super().save(*args, **kwargs)
 
     @property
     def view_count(self) -> int:
