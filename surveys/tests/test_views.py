@@ -9,6 +9,30 @@ from accounts.models import User
 from surveys.models import Form
 
 
+class BaseViewSetTest(APITestCase):
+    view_name = None
+    model = None
+
+    def setUp(self):
+        cache.clear()
+        self.client = APIClient()
+        self.user1 = baker.make(User)
+        self.client.force_authenticate(user=self.user1)
+        self.instance1 = baker.make(self.model)
+        self.instance2 = baker.make(self.model)
+
+    def test_get_with_pk(self):
+        response = self.client.get(reverse(f"surveys:{self.view_name}-detail", kwargs={"pk": self.instance1.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+
+    def test_get_list(self):
+        response = self.client.get(reverse(f"surveys:{self.view_name}-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(len(response.json()), 2)
+
+
 class FormViewSetTest(APITestCase):
     def setUp(self):
         # clear cache for testing throttle
