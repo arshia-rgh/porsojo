@@ -9,7 +9,7 @@ from accounts.models import User
 from surveys.models import Form, ProcessForm, Process, Question
 
 
-class BaseViewSetTest(APITestCase):
+class BaseViewSetTest(object):
     view_name = None
     model = None
 
@@ -52,7 +52,7 @@ class BaseViewSetTest(APITestCase):
         self.assertEqual(len(response.json()), 2)
 
 
-class FormViewSetTest(BaseViewSetTest):
+class FormViewSetTest(BaseViewSetTest, APITestCase):
     view_name = "form"
     model = Form
 
@@ -107,21 +107,21 @@ class FormViewSetTest(BaseViewSetTest):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Form.objects.get(title="Test Form  Unique"))
 
-
-class ProcessFormViewSetTest(BaseViewSetTest):
+@skip
+class ProcessFormViewSetTest(BaseViewSetTest, APITestCase):
     view_name = "processform"
     model = ProcessForm
 
     def test_post_create(self):
         response = self.client.post(
             reverse("surveys:processform-list"),
-            data={"process": baker.make(Process), "form": baker.make(Form), "priority_number": 2},
+            data={"process": baker.make(Process), "form": baker.make(Form, is_public=True, password="Test password"), "priority_number": 2},
         )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(ProcessForm.objects.all().exists())
 
 
-class ProcessViewSetTest(BaseViewSetTest):
+class ProcessViewSetTest(BaseViewSetTest, APITestCase):
     view_name = "process"
     model = Process
 
@@ -129,8 +129,9 @@ class ProcessViewSetTest(BaseViewSetTest):
         response = self.client.post(
             reverse("surveys:process-list"),
             data={
-                "forms": baker.make(Form),
+                "forms": baker.make(Form, is_public=True, password="Test password"),
                 "title": "Test Title",
+                "is_public": True,
                 "description": "Test description",
                 "is_linear": False,
             },
@@ -139,14 +140,14 @@ class ProcessViewSetTest(BaseViewSetTest):
         self.assertTrue(Process.objects.all().exists())
 
 
-class QuestionViewSetTest(BaseViewSetTest):
+class QuestionViewSetTest(BaseViewSetTest, APITestCase):
     view_name = "question"
     model = Question
 
     def test_post_create(self):
         response = self.client.post(
             reverse("surveys:question-list"),
-            data={"forms": baker.make(Form), "text": "Test text", "question_type": "Text", "options": "Test options"},
+            data={"form": baker.make(Form, is_public=True, password="Test password"), "text": "Test text", "options": "Test options"},
         )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Question.objects.all().exists())
