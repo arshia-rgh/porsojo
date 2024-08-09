@@ -32,17 +32,29 @@ class BaseViewSetTest(APITestCase):
         self.assertEqual(response["Content-Type"], "application/json")
         self.assertEqual(len(response.json()), 2)
 
+    def test_post_create(self):
+        raise NotImplementedError('test_post_create must be implemented')
 
-class FormViewSetTest(APITestCase):
-    def setUp(self):
-        # clear cache for testing throttle
-        cache.clear()
+    def test_list_cache(self):
+        response = self.client.get(reverse(f"surveys:{self.view_name}-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(len(response.json()), 2)
 
-        self.client = APIClient()
-        self.user1 = baker.make(User)
-        self.client.force_authenticate(user=self.user1)
-        self.form1 = baker.make(Form, password="test password")
-        self.form2 = baker.make(Form, password="test password2")
+        # check if cache populated
+        cache_key = f"{self.view_name}_list"
+        cached_response = cache.get(cache_key)
+        self.assertIsNotNone(cached_response)
+
+        response = self.client.get(reverse(f"surveys:{self.view_name}-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(len(response.json()), 2)
+
+
+class FormViewSetTest(BaseViewSetTest):
+    view_name = "form"
+    model = Form
 
     @skip
     def test_throttling(self):
@@ -84,32 +96,3 @@ class FormViewSetTest(APITestCase):
             },
         )
         self.assertEqual(response.status_code, 429)
-
-    def test_get_with_pk(self):
-        response = self.client.get(reverse("surveys:form-detail", kwargs={"pk": self.form1.pk}))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-
-    def test_get_list(self):
-        response = self.client.get(reverse("surveys:form-list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-        self.assertEqual(len(response.json()), 2)
-
-    def test_list_cache(self):
-        # First request should populate the cache
-        response = self.client.get(reverse("surveys:form-list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-        self.assertEqual(len(response.json()), 2)
-
-        # Check if the cache is populated
-        cache_key = "form_list"
-        cached_response = cache.get(cache_key)
-        self.assertIsNotNone(cached_response)
-
-        # Second request should hit the cache
-        response = self.client.get(reverse("surveys:form-list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-        self.assertEqual(len(response.json()), 2)
