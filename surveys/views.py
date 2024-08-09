@@ -23,7 +23,7 @@ class ProcessFormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
     queryset = ProcessForm.objects.all()
     serializer_class = ProcessFormSerializer
     permission_classes = [IsAuthenticated]
-    cache_key = "process_form_list"
+    cache_key = "processform_list"
 
 
 class ProcessViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):

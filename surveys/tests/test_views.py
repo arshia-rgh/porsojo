@@ -6,7 +6,7 @@ from model_bakery import baker
 from rest_framework.test import APITestCase, APIClient
 
 from accounts.models import User
-from surveys.models import Form
+from surveys.models import Form, ProcessForm, Process
 
 
 class BaseViewSetTest(APITestCase):
@@ -105,3 +105,20 @@ class FormViewSetTest(BaseViewSetTest):
                                     )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Form.objects.get(title="Test Form  Unique").exists())
+
+
+class ProcessFormViewSetTest(BaseViewSetTest):
+    view_name = "processform"
+    model = ProcessForm
+
+    def test_post_create(self):
+        response = self.client.post(reverse("surveys:processform-list"),
+                                    data={
+                                        "process": baker.make(Process),
+                                        "form": baker.make(Form),
+                                        "priority_number": 2
+                                    }
+
+                                    )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(ProcessForm.objects.all().exists())
