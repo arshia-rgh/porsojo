@@ -1,4 +1,5 @@
 import json
+from types import NoneType
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -14,7 +15,7 @@ from utils.client_ip_service import get_client_ip
 
 @receiver(user_logged_in)
 def log_user_login(sender, request, user, **kwargs):
-    message = f"{user.full_name} is logged in with ip:{get_client_ip(request)}"
+    message = f"{user} is logged in with ip:{get_client_ip(request)}"
     UserActivity.objects.create(user=user, action_type=LOGIN, remarks=message)
 
 
@@ -29,6 +30,8 @@ def sync_report_details(sender, instance, **kwrgs):
     """
     Use django channels to sync all of our reports details.
     """
+    if type(instance.content_type) is NoneType:
+        return
 
     model_class = instance.content_type.model_class()
     model_name = instance.content_type.name
