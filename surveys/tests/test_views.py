@@ -146,12 +146,7 @@ class QuestionViewSetTest(BaseViewSetTest):
     def test_post_create(self):
         response = self.client.post(
             reverse("surveys:question-list"),
-            data={
-                "forms": baker.make(Form),
-                "text": "Test text",
-                "question_type": "Text",
-                "options": "Test options"
-            }
+            data={"forms": baker.make(Form), "text": "Test text", "question_type": "Text", "options": "Test options"},
         )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Question.objects.all().exists())
