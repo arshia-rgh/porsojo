@@ -6,7 +6,7 @@ from model_bakery import baker
 from rest_framework.test import APITestCase, APIClient
 
 from accounts.models import User
-from surveys.models import Form, ProcessForm, Process
+from surveys.models import Form, ProcessForm, Process, Question
 
 
 class BaseViewSetTest(APITestCase):
@@ -137,3 +137,21 @@ class ProcessViewSetTest(BaseViewSetTest):
         )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Process.objects.all().exists())
+
+
+class QuestionViewSetTest(BaseViewSetTest):
+    view_name = "question"
+    model = Question
+
+    def test_post_create(self):
+        response = self.client.post(
+            reverse("surveys:question-list"),
+            data={
+                "forms": baker.make(Form),
+                "text": "Test text",
+                "question_type": "Text",
+                "options": "Test options"
+            }
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Question.objects.all().exists())
