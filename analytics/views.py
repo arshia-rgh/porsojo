@@ -7,11 +7,12 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from surveys.models import Form, Process, Response
 
 from .mixins import UserActivityMixin
+from surveys.mixins import CachedListMixin
 from .models.activities import UserActivity
 from .serializers import UserActivitySerializer
 
 
-class UserActivityReadOnlyViewSet(UserActivityMixin, ReadOnlyModelViewSet):
+class UserActivityReadOnlyViewSet(CachedListMixin, UserActivityMixin, ReadOnlyModelViewSet):
     """
     a ViewSet for UserActivity Model (Read Only)
     """
@@ -19,6 +20,7 @@ class UserActivityReadOnlyViewSet(UserActivityMixin, ReadOnlyModelViewSet):
     queryset = UserActivity.objects.all()
     serializer_class = UserActivitySerializer
     permission_classes = [IsAdminUser]
+    cache_key = "activity_list"
 
 
 class ReportDashboardView(LoginRequiredMixin, TemplateView):
@@ -69,3 +71,4 @@ class ReportProcessView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["responses"] = Response.objects.filter(process=self.get_object())
         return context
+    

@@ -48,7 +48,7 @@ class Question(models.Model):
         ("Check_box", "Check_box"),
         ("Select", "Select"),
     )
-    form = models.ForeignKey(Form, models.CASCADE)
+    form = models.ForeignKey(Form, on_delete=models.CASCADE)
     text = models.CharField(max_length=255)
     question_type = models.CharField(max_length=100, choices=QUESTION_TYPES, default="Text")
     required = models.BooleanField(default=True)
@@ -84,7 +84,6 @@ class Process(models.Model):
         # if the process is private and the password is empty should raise an exception
         elif not self.is_public and self.password == "":
             raise ValueError("Password cannot be empty for non-public processes")
-        super().save(*args, **kwargs)
 
     @property
     def view_count(self) -> int:
