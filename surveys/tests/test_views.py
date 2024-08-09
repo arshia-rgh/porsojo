@@ -133,8 +133,7 @@ class ProcessViewSetTest(BaseViewSetTest):
                 "title": "Test Title",
                 "description": "Test description",
                 "is_linear": False,
-            }
-
+            },
         )
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Process.objects.all().exists())
