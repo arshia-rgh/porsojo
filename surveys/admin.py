@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Form, Process, ProcessForm
+from .models import Answer, Form, Process, ProcessForm, Question
 
 
 @admin.register(Form)
@@ -18,4 +18,11 @@ class ProcessFormAdmin(admin.ModelAdmin):
     pass
 
 
-# Register your models here.
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Answer)
+class AnswerAdmin(admin.ModelAdmin):
+    pass
