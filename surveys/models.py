@@ -49,13 +49,13 @@ class Question(models.Model):
     class QuestionTextChoices(models.TextChoices):
         Text = ("T", "Text")
         Number = ("N", "Number")
-        Check_box = ("C", "Check box")
+        Check_box = ("CB", "Check box")
         Select = ("S", "Select")
 
     form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="questions")
     text = models.CharField(max_length=255)
     question_type = models.CharField(
-        max_length=1,
+        max_length=2,
         choices=QuestionTextChoices.choices,
         default=QuestionTextChoices.Text,
     )
@@ -73,7 +73,7 @@ class Question(models.Model):
 class Process(models.Model):
     forms = models.ManyToManyField(Form, through="ProcessForm")
     title = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_public = models.BooleanField(default=True)
     password = models.CharField(max_length=100, blank=True)
