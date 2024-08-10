@@ -6,12 +6,15 @@ from analytics.models.activities import UserActivity
 
 class Form(models.Model):
     title = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_public = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=100, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.title} - {self.user}"
 
     def save(self, *args, **kwargs):
 
@@ -43,16 +46,24 @@ class Form(models.Model):
 
 
 class Question(models.Model):
-    QUESTION_TYPES = (
-        ("Text", "Text"),
-        ("Check_box", "Check_box"),
-        ("Select", "Select"),
-    )
-    form = models.ForeignKey(Form, on_delete=models.CASCADE)
+    class QuestionTextChoices(models.TextChoices):
+        Text = ("T", "Text")
+        Number = ("N", "Number")
+        Check_box = ("C", "Check box")
+        Select = ("S", "Select")
+
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="questions")
     text = models.CharField(max_length=255)
-    question_type = models.CharField(max_length=100, choices=QUESTION_TYPES, default="Text")
+    question_type = models.CharField(
+        max_length=1,
+        choices=QuestionTextChoices.choices,
+        default=QuestionTextChoices.Text,
+    )
     required = models.BooleanField(default=True)
-    options = models.TextField()
+    options = models.TextField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.text} - {self.question_type}"
 
     @property
     def separated_options(self):
@@ -66,7 +77,10 @@ class Process(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_public = models.BooleanField(default=True)
     password = models.CharField(max_length=100, blank=True)
-    is_linear = models.BooleanField()
+    is_linear = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{self.title} - {self.user}"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -111,6 +125,9 @@ class ProcessForm(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
     priority_number = models.IntegerField()
 
+    def __str__(self) -> str:
+        return f"{self.process} - {self.form}"
+
 
 class Response(models.Model):
     form = models.ForeignKey(
@@ -121,8 +138,14 @@ class Response(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self) -> str:
+        return f"{self.user} - {self.form}"
+
 
 class Answer(models.Model):
     response = models.ForeignKey(Response, on_delete=models.CASCADE)
     question = models.OneToOneField(Question, on_delete=models.CASCADE)
     answer_text = models.TextField()
+
+    def __str__(self) -> str:
+        return f"{self.question} - {self.answer_text}"
