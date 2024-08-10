@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Form, ProcessForm, Process, Response
+from .models import Form, ProcessForm, Process, Question, Response
 
 
 class FormSerializer(serializers.ModelSerializer):
@@ -43,3 +43,9 @@ class ResponseSerializer(serializers.ModelSerializer):
         model = Response
         fields = '__all__'
         read_only_fields = ['user']
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = "__all__"

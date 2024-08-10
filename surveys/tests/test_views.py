@@ -6,19 +6,55 @@ from model_bakery import baker
 from rest_framework.test import APITestCase, APIClient
 
 from accounts.models import User
-from surveys.models import Form
+from surveys.models import Form, ProcessForm, Process, Question
 
 
-class FormViewSetTest(APITestCase):
+class BaseViewSetTest:
+    view_name = None
+    model = None
+
     def setUp(self):
-        # clear cache for testing throttle
         cache.clear()
-
         self.client = APIClient()
         self.user1 = baker.make(User)
         self.client.force_authenticate(user=self.user1)
-        self.form1 = baker.make(Form, password="test password")
-        self.form2 = baker.make(Form, password="test password2")
+        self.instance1 = baker.make(self.model)
+        self.instance2 = baker.make(self.model)
+
+    def test_get_with_pk(self):
+        response = self.client.get(reverse(f"surveys:{self.view_name}-detail", kwargs={"pk": self.instance1.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+
+    def test_get_list(self):
+        response = self.client.get(reverse(f"surveys:{self.view_name}-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(len(response.json()), 2)
+
+    def test_post_create(self):
+        raise NotImplementedError("test_post_create must be implemented")
+
+    def test_list_cache(self):
+        response = self.client.get(reverse(f"surveys:{self.view_name}-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(len(response.json()), 2)
+
+        # check if cache populated
+        cache_key = f"{self.view_name}_list"
+        cached_response = cache.get(cache_key)
+        self.assertIsNotNone(cached_response)
+
+        response = self.client.get(reverse(f"surveys:{self.view_name}-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(len(response.json()), 2)
+
+
+class FormViewSetTest(BaseViewSetTest, APITestCase):
+    view_name = "form"
+    model = Form
 
     @skip
     def test_throttling(self):
@@ -45,7 +81,6 @@ class FormViewSetTest(APITestCase):
                     "title": "Test Form",
                     "description": "test description",
                     "password": "test password",
-                    "user": self.user1.id,
                 },
             )
             self.assertEqual(response.status_code, 201)
@@ -56,36 +91,71 @@ class FormViewSetTest(APITestCase):
                 "title": "Test Form",
                 "description": "test description",
                 "password": "test password",
-                "user": self.user1.id,
             },
         )
         self.assertEqual(response.status_code, 429)
 
-    def test_get_with_pk(self):
-        response = self.client.get(reverse("surveys:form-detail", kwargs={"pk": self.form1.pk}))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
+    def test_post_create(self):
+        response = self.client.post(
+            reverse("surveys:form-list"),
+            data={
+                "title": "Test Form  Unique",
+                "description": "test description",
+                "password": "test password",
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Form.objects.get(title="Test Form  Unique"))
 
-    def test_get_list(self):
-        response = self.client.get(reverse("surveys:form-list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-        self.assertEqual(len(response.json()), 2)
 
-    def test_list_cache(self):
-        # First request should populate the cache
-        response = self.client.get(reverse("surveys:form-list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-        self.assertEqual(len(response.json()), 2)
+class ProcessFormViewSetTest(BaseViewSetTest, APITestCase):
+    view_name = "processform"
+    model = ProcessForm
 
-        # Check if the cache is populated
-        cache_key = "form_list"
-        cached_response = cache.get(cache_key)
-        self.assertIsNotNone(cached_response)
+    def test_post_create(self):
+        response = self.client.post(
+            reverse("surveys:processform-list"),
+            data={
+                "process": baker.make(Process).id,
+                "form": baker.make(Form, is_public=True, password="Test password").id,
+                "priority_number": 2,
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(ProcessForm.objects.all().exists())
 
-        # Second request should hit the cache
-        response = self.client.get(reverse("surveys:form-list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-        self.assertEqual(len(response.json()), 2)
+
+class ProcessViewSetTest(BaseViewSetTest, APITestCase):
+    view_name = "process"
+    model = Process
+
+    def test_post_create(self):
+        response = self.client.post(
+            reverse("surveys:process-list"),
+            data={
+                "forms": baker.make(Form, is_public=True, password="Test password"),
+                "title": "Test Title",
+                "is_public": True,
+                "description": "Test description",
+                "is_linear": False,
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Process.objects.all().exists())
+
+
+class QuestionViewSetTest(BaseViewSetTest, APITestCase):
+    view_name = "question"
+    model = Question
+
+    def test_post_create(self):
+        response = self.client.post(
+            reverse("surveys:question-list"),
+            data={
+                "form": baker.make(Form, is_public=True, password="Test password").id,
+                "text": "Test text",
+                "options": "Test options",
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Question.objects.all().exists())

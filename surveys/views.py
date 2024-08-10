@@ -1,12 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
+from analytics.mixins import UserActivityMixin
 from .mixins import CachedListMixin, ThrottleMixin
-from .models import Form, ProcessForm, Process, Response
-from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer, ResponseSerializer
+from .models import Form, ProcessForm, Process, Question, Response
+from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer, QuestionSerializer, ResponseSerializer
 
 
-class FormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
+class FormViewSet(CachedListMixin, ThrottleMixin, UserActivityMixin, viewsets.ModelViewSet):
     queryset = Form.objects.all()
     serializer_class = FormSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -19,14 +20,14 @@ class FormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
         return context
 
 
-class ProcessFormViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
+class ProcessFormViewSet(CachedListMixin, ThrottleMixin, UserActivityMixin, viewsets.ModelViewSet):
     queryset = ProcessForm.objects.all()
     serializer_class = ProcessFormSerializer
     permission_classes = [IsAuthenticated]
-    cache_key = "process_form_list"
+    cache_key = "processform_list"
 
 
-class ProcessViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
+class ProcessViewSet(CachedListMixin, ThrottleMixin, UserActivityMixin, viewsets.ModelViewSet):
     queryset = Process.objects.all()
     serializer_class = ProcessSerializer
     permission_classes = [IsAuthenticated]
@@ -52,3 +53,9 @@ class ResponseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user = self.request.user)
 
+
+class QuestionViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
+    cache_key = "question_list"
