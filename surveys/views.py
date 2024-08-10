@@ -40,12 +40,15 @@ class ProcessViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
     
 
 class ResponseViewSet(viewsets.ModelViewSet):
-    queryset = Response.objects.all()
+    """
+        Implements CURD methods for `Response` class using `ModelViewSet`
+        from django rest-framework.
+    """
+
     serializer_class = ResponseSerializer
+    queryset = Response.objects.all()
     permission_classes = [IsAuthenticated]
 
-    # send request to serializer in order to get authenticated user
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["request"] = self.request
-        return context
+    def perform_create(self, serializer):
+        serializer.save(user = self.request.user)
+
