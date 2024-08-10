@@ -2,8 +2,8 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from analytics.mixins import UserActivityMixin
 from .mixins import CachedListMixin, ThrottleMixin
-from .models import Form, ProcessForm, Process, Question
-from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer, QuestionSerializer
+from .models import Form, ProcessForm, Process, Question, Response
+from .serializers import FormSerializer, ProcessFormSerializer, ProcessSerializer, QuestionSerializer, ResponseSerializer
 
 
 class FormViewSet(CachedListMixin, ThrottleMixin, UserActivityMixin, viewsets.ModelViewSet):
@@ -43,6 +43,20 @@ class ProcessViewSet(CachedListMixin, ThrottleMixin, UserActivityMixin, viewsets
         context = super().get_serializer_context()
         context["request"] = self.request
         return context
+    
+
+class ResponseViewSet(viewsets.ModelViewSet):
+    """
+        Implements CURD methods for `Response` class using `ModelViewSet`
+        from django rest-framework.
+    """
+
+    serializer_class = ResponseSerializer
+    queryset = Response.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user = self.request.user)
 
 
 class QuestionViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
