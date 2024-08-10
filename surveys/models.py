@@ -7,7 +7,7 @@ from analytics.models.activities import UserActivity
 class Form(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="forms")
     is_public = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -74,7 +74,7 @@ class Process(models.Model):
     forms = models.ManyToManyField(Form, through="ProcessForm")
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="processes")
     is_public = models.BooleanField(default=True)
     password = models.CharField(max_length=100, blank=True)
     is_linear = models.BooleanField(default=False)
@@ -130,11 +130,8 @@ class ProcessForm(models.Model):
 
 
 class Response(models.Model):
-    form = models.ForeignKey(
-        Form,
-        on_delete=models.CASCADE,
-    )
-    Process = models.OneToOneField(Process, on_delete=models.CASCADE)
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="responses")
+    Process = models.OneToOneField(Process, on_delete=models.CASCADE, related_name="responses")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now=True)
 
@@ -143,8 +140,8 @@ class Response(models.Model):
 
 
 class Answer(models.Model):
-    response = models.ForeignKey(Response, on_delete=models.CASCADE)
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)
+    response = models.ForeignKey(Response, on_delete=models.CASCADE, related_name="answers")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
     answer_text = models.TextField()
 
     def __str__(self) -> str:
