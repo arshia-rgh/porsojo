@@ -46,7 +46,7 @@ class ProcessViewSet(CachedListMixin, ThrottleMixin, UserActivityMixin, viewsets
         return context
 
 
-class ResponseViewSet(CachedListMixin, viewsets.ModelViewSet):
+class ResponseViewSet(UserActivityMixin, CachedListMixin, viewsets.ModelViewSet):
     """
     Implements CURD methods for `Response` class using `ModelViewSet`
     from django rest-framework.
