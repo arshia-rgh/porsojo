@@ -52,8 +52,7 @@ class UserActivityMixin:
     def _write_log(self, request, response):
         status = SUCCESS if response.status_code < 400 else FAILED
         user = self._get_user(request)
-
-        if user and not getattr(settings, "TESTING", False):
+        if not getattr(settings, "TESTING", False):
             logging.info("Started Log Entry")
 
             data = {
