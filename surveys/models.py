@@ -146,3 +146,19 @@ class Answer(models.Model):
 
     def __str__(self) -> str:
         return f"{self.question} - {self.answer_text}"
+
+    def save(self, *args, **kwargs):
+        question_type = self.question.question_type
+        answer_text = self.answer_text
+        options = self.question.separated_options
+
+        if question_type == Question.QuestionTextChoices.Number and not answer_text.isdigit():
+            raise ValueError("Answer must be a number")
+        elif question_type == Question.QuestionTextChoices.Select and answer_text not in options:
+            raise ValueError("Answer must be one of the options")
+        elif question_type == Question.QuestionTextChoices.Check_box:
+            selected_options = set(answer_text.split(","))
+            if not selected_options.issubset(set(options)):
+                raise ValueError("Answer must be a subset of the options")
+
+        super().save(*args, **kwargs)
