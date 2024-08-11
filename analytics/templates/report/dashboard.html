@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body style="text-align:center;width:100svw;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:start;">
+    
+    <div class="search-bar" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <p>What Report would you like to See?<br><p>
+        <div>
+            <p> Search for Form</p>
+            <input id="form-id-input" type="text" size="30"><br>
+            <input id="form-id-submit" type="button" value="Enter">
+        </div>
+        <div>
+            <p> Search for Process</P>
+            <input id="process-id-input" type="text" size="30"><br>
+            <input id="process-id-submit" type="button" value="Enter">
+        </div>
+    </div>
+    
+    <p style="background-color:orange;padding :1%;">Your forms and processes</p>
+    <div class="lists" style="padding :1%;display:flex;flex-direction:row;justify_content:center; align-content:stretch">
+        
+        <div class="form list">
+            <ul style="display:flex;flex-direction:column;justify_content:space-evenly;">
+                {% for form in forms %}
+                <li><a href="{% url "analytics:report_form" form.id %}">{{form.title}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="perocess list">
+            <ul style="display:flex;flex-direction:column;justify_content:space-evenly;">
+                {% for process in processes %}
+                <li><a href="{% url "analytics:report_process" process.id %}">{{process.title}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <script>
+        document.querySelector('#form-id-input').focus();
+        document.querySelector('#form-id-input').onkeyup = function(e) {
+            if (e.key === 'Enter') {  // enter, return
+                document.querySelector('#form-id-submit').click();
+            }
+        };
+
+        document.querySelector('#form-id-submit').onclick = function(e) {
+            var formId = document.querySelector('#form-id-input').value;
+            window.location.pathname = 'analytics/report/form/' + formId;
+        };
+        document.querySelector('#process-id-submit').onclick = function(e) {
+            var processId = document.querySelector('#process-id-input').value;
+            window.location.pathname = 'analytics/report/process/' + processId ;
+        };
+    </script>
+</body>
+</html>
