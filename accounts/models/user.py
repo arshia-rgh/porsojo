@@ -15,8 +15,6 @@ class User(AbstractUser):
 
     email = models.EmailField(
         _("email address"),
-        blank=True,
-        null=True,
         unique=True,
     )
 
@@ -28,3 +26,5 @@ class User(AbstractUser):
         blank=True,
         validators=[iranian_phone_number_validator],
     )
+
+    is_email_verified = models.BooleanField(default=False)
