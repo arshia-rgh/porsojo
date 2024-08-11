@@ -182,3 +182,7 @@ class ChangePasswordView(generics.UpdateAPIView):
         self.object.set_password(serializer.validated_data["password"])
         self.object.save()
         return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+
+
+class SendEmailVerificationView(generics.GenericAPIView):
+    pass
