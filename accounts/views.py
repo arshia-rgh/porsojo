@@ -1,5 +1,9 @@
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -193,5 +197,18 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
 
 
-class SendEmailVerificationView(generics.GenericAPIView):
-    pass
+class VerifyEmailView(generics.GenericAPIView):
+
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64)
+            user = get_object_or_404(User, pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(token):
+            user.is_email_verified = True
+            user.save()
+            return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
