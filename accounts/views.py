@@ -198,10 +198,24 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 
 class VerifyEmailView(generics.GenericAPIView):
+    """
+        View that handles email verification
+    """
 
     def get(self, request, uidb64, token, *args, **kwargs):
+        """
+            Verifies the user's email.
+
+            Args:
+                request (Request): The DRF request object.
+                uidb64 (str): The base64 encoded user ID.
+                token (str): The token for email verification.
+
+            Returns:
+                Response: A response object containing a success or failure message.
+        """
         try:
-            uid = force_str(urlsafe_base64_decode(uidb64)
+            uid = force_str(urlsafe_base64_decode(uidb64))
             user = get_object_or_404(User, pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None

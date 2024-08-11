@@ -6,6 +6,7 @@ from utils.otp_service import BaseOtpService, FakeOtpService, KavenegarOtpServic
 from django.core.mail import send_mail
 from utils.email_verification_uid import generate_email_verification_token, generate_uid
 
+
 def get_otp_service() -> BaseOtpService:
     """
     Returns the OTP service to use.
@@ -57,4 +58,3 @@ def send_verification_email(user_id, email):
     user = User.objects.get(pk=user_id)
     token = generate_email_verification_token(user)
     uid = generate_uid(user)
-
