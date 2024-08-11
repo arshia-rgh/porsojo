@@ -39,8 +39,10 @@ class UserRegisterView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
-        return Response({"message": "User registered successfully. Please check your email to verify your account."},
-                        status=status.HTTP_201_CREATED)
+        return Response(
+            {"message": "User registered successfully. Please check your email to verify your account."},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class SendOtpTokenView(generics.GenericAPIView):
@@ -199,20 +201,20 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 class VerifyEmailView(generics.GenericAPIView):
     """
-        View that handles email verification
+    View that handles email verification
     """
 
     def get(self, request, uidb64, token, *args, **kwargs):
         """
-            Verifies the user's email.
+        Verifies the user's email.
 
-            Args:
-                request (Request): The DRF request object.
-                uidb64 (str): The base64 encoded user ID.
-                token (str): The token for email verification.
+        Args:
+            request (Request): The DRF request object.
+            uidb64 (str): The base64 encoded user ID.
+            token (str): The token for email verification.
 
-            Returns:
-                Response: A response object containing a success or failure message.
+        Returns:
+            Response: A response object containing a success or failure message.
         """
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))

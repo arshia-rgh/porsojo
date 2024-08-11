@@ -54,12 +54,15 @@ def delete_otp_token(otp_token_id: int) -> None:
 @shared_task
 def send_verification_email(user_id, email):
     from django.contrib.auth import get_user_model
+
     User = get_user_model()
     user = User.objects.get(pk=user_id)
     token = generate_email_verification_token(user)
     uid = generate_uid(user)
     # uidb64 and token will be sent as dynamic parts of the URL
-    verification_link = f"{settings.FRONTEND_URL}{reverse("accounts:verify_email", kwargs={'uidb64': uid, 'token': token})}"
+    verification_link = (
+        f"{settings.FRONTEND_URL}{reverse("accounts:verify_email", kwargs={'uidb64': uid, 'token': token})}"
+    )
 
     subject = "Verify your email address"
     message = f"Please click the link below to verify your email address:\n{verification_link}"

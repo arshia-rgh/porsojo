@@ -7,7 +7,7 @@ from .views import (
     SendOtpTokenView,
     UserRegisterView,
     VerifyOtpTokenView,
-    VerifyEmailView
+    VerifyEmailView,
 )
 
 app_name = "accounts"

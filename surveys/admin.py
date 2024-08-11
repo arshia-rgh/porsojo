@@ -22,4 +22,5 @@ class ProcessFormAdmin(admin.ModelAdmin):
 class ResponseAdmin(admin.ModelAdmin):
     pass
 
+
 # Register your models here.
