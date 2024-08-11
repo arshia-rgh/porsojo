@@ -15,7 +15,7 @@ from accounts.serializer import (
     UserRegistrationSerializer,
     VerifyOtpTokenSerializer,
 )
-from accounts.tasks import send_otp
+from accounts.tasks import send_otp, send_verification_email
 from utils.otp_service import BaseOtpService, FakeOtpService, KavenegarOtpService
 
 
@@ -28,6 +28,15 @@ class UserRegisterView(generics.CreateAPIView):
 
     serializer_class = UserRegistrationSerializer
     permission_classes = (AllowAny,)
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        send_verification_email.delay(user.id, user.email)
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return Response({"message": "User registered successfully. Please check your email to verify your account."},
+                        status=status.HTTP_201_CREATED)
 
 
 class SendOtpTokenView(generics.GenericAPIView):
