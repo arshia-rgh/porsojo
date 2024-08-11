@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body style="text-align:center;width:100svw;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:start;">
+    <div>
+        <title>{{form.title}}</title><br>
+        Description:
+        <p>{{form.description}}</p><br>
+        Created at:
+        <p>{{form.created_at}}</p><br>
+        Last Update:
+        <p>{{form.updated_at}}</p><br>
+        Owner : 
+        <p>{{form.user}}</p>
+        View counts: 
+        <p id="form-view-count" cols="100" rows="20">{{form.view_count}}</p><br>
+        Response counts:
+        <p id="form-response-count" cols="100" rows="20">{{form.response_count}}</p><br>
+    
+    </div>
+    <div id="form-responses" cols="100" rows="20">
+        {% for response in responses %}
+        <p>{{response}}</p>
+        {%endfor%}
+    </div><br>
+    
+    {{ form.pk|json_script:"form-id" }}
+    
+    <script>
+        
+        const formId = JSON.parse(document.getElementById('form-id').textContent);
+
+        const socket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/analytics/report/form/'
+            + formId
+            + '/'
+        );
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            
+            switch (data.type) {
+                case "view":
+                    
+                    document.querySelector('#form-view-count').innerHTML = (data.views);
+                    break;
+                case "response_add":
+                    response_data = JSON.parse(data.response)
+                    response = `<p>resp<br>${data.response}</p>`;
+                    document.querySelector('#form-responses').innerHTML += response;
+                    break;
+                case "response_count":
+                    document.querySelector('#form-response-count').innerHTML = data.response_count;
+                    break;
+                
+                }
+            
+           
+        };
+
+        socket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+    </script>
+
+
+
+</body>
+
