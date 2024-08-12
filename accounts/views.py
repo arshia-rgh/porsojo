@@ -225,7 +225,7 @@ class VerifyEmailView(generics.GenericAPIView):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
 
-        if user is not None and default_token_generator.check_token(token):
+        if user is not None and default_token_generator.check_token(user, token):
             user.is_email_verified = True
             user.save()
             return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
