@@ -12,6 +12,7 @@ class Form(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=100, blank=True)
+    is_single = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"{self.title} - {self.user}"
@@ -42,7 +43,7 @@ class Form(models.Model):
         """
         return number of responses given to the Process object
         """
-        return Response.objects.filter(form=self).count()
+        return FormResponse.objects.filter(form=self).count()
 
 
 class Question(models.Model):
@@ -114,10 +115,7 @@ class Process(models.Model):
         """
         return number of responses given to the Process object
         """
-        fc = ProcessForm.objects.filter(process=self).count()
-        resp_count = Response.objects.filter(process=self).count()
-
-        return int(resp_count / fc)  # devide responses per forms
+        return ProcessResponse.objects.filter(process=self).count()
 
 
 class ProcessForm(models.Model):
@@ -129,10 +127,20 @@ class ProcessForm(models.Model):
         return f"{self.process} - {self.form}"
 
 
-class Response(models.Model):
+class ProcessResponse(models.Model):
+    process = models.ForeignKey(Process, on_delete=models.CASCADE, related_name="responses")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.process} - {self.user}"
+
+
+class FormResponse(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="responses")
-    Process = models.OneToOneField(Process, on_delete=models.CASCADE, related_name="responses")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    process_response = models.ForeignKey(
+        ProcessResponse, on_delete=models.CASCADE, null=True, blank=True, related_name="form_responses"
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="form_responses")
     submitted_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
@@ -140,7 +148,7 @@ class Response(models.Model):
 
 
 class Answer(models.Model):
-    response = models.ForeignKey(Response, on_delete=models.CASCADE, related_name="answers")
+    response = models.ForeignKey(FormResponse, on_delete=models.CASCADE, related_name="answers")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
     answer_text = models.TextField()
 

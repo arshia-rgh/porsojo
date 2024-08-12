@@ -6,6 +6,8 @@ from .views import (
     ProcessFormViewSet,
     ProcessViewSet,
     QuestionViewSet,
+    ReceiveProcessResponseView,
+    ReceiveSingleFormResponseView,
     SendFormTemplateView,
     SendProccessTemplateView,
 )
@@ -21,4 +23,6 @@ urlpatterns = [
     path("", include(router.urls)),
     path("processes/<int:pk>/template/", SendProccessTemplateView.as_view(), name="send_process_template"),
     path("forms/<int:pk>/template/", SendFormTemplateView.as_view(), name="send_forms_template"),
+    path("response/processes/", ReceiveProcessResponseView.as_view(), name="receive_process_response"),
+    path("response/forms/", ReceiveSingleFormResponseView.as_view(), name="receive_form_response"),
 ]
