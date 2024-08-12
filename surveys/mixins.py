@@ -36,3 +36,36 @@ class ThrottleMixin:
         else:
             self.throttle_scope = "receives"
         return [ScopedRateThrottle()]
+    
+
+
+class CheckFormPasswordMixin:
+    """
+    A mixin for checking if the form password is correct
+    """
+
+    def password_validation(self, password):
+        if not self.get_object().is_public and self.get_object().password != password:
+            raise self.serializers.ValidationError({"password": "Incorrect password or form is not public"})
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["password"] = self.request.data.get("password")
+        self.password_validation(self.request.data.get("password"))
+        return context
+    
+
+class CheckProcessPasswordMixin:
+    """
+    A mixin for checking if the process password is correct
+    """
+
+    def password_validation(self, password):
+        if not self.get_object().is_public and self.get_object().password != password:
+            raise self.serializers.ValidationError({"password": "Incorrect password or process is not public"})
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["password"] = self.request.data.get("password")
+        self.password_validation(self.request.data.get("password"))
+        return context
