@@ -5,8 +5,13 @@ django-cors-headers==4.4.0
 django-filter==24.2
 psycopg==3.2.1
 channels==4.1.0
+daphne==4.1.2
 kavenegar==1.1.2
 drf-spectacular==0.27.2
 celery==5.4.0
 model-bakery==1.18.2
 django-extensions==3.2.3
+asgiref==3.8.1
+channels_redis==4.2.0
+msgpack==1.0.8
+redis==5.0.8

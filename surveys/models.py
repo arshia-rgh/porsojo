@@ -106,7 +106,7 @@ class Process(models.Model):
         Counts the number of views for each instance
         """
         return UserActivity.count_api_READ_activities(
-            "Process",  #    must give model name as str
+            "process",  #    must give model name as str
             self.pk,
         )
 

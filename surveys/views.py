@@ -59,7 +59,22 @@ class ProcessViewSet(CachedListMixin, ThrottleMixin, UserActivityMixin, viewsets
         return context
 
 
-class QuestionViewSet(CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
+class ResponseViewSet(UserActivityMixin, CachedListMixin, viewsets.ModelViewSet):
+    """
+    Implements CURD methods for `Response` class using `ModelViewSet`
+    from django rest-framework.
+    """
+
+    serializer_class = ResponseSerializer
+    queryset = Response.objects.all()
+    permission_classes = [IsAuthenticated]
+    cache_key = "response_list"
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class QuestionViewSet(UserActivityMixin, CachedListMixin, ThrottleMixin, viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     permission_classes = [IsAuthenticated]

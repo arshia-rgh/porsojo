@@ -16,6 +16,7 @@ router = DefaultRouter()
 router.register("forms", FormViewSet)
 router.register("process-forms", ProcessFormViewSet)
 router.register("processes", ProcessViewSet)
+router.register("responses", ResponseViewSet)
 router.register("questions", QuestionViewSet)
 
 app_name = "surveys"
