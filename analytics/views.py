@@ -4,7 +4,7 @@ from django.views.generic.base import TemplateView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from surveys.models import Form, Process, Response
+from surveys.models import Form, Process, FormResponse, ProcessResponse
 
 from .mixins import UserActivityMixin
 from surveys.mixins import CachedListMixin
@@ -34,7 +34,7 @@ class ReportDashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.is_admin:
+        if self.request.user.is_staff:
             context["forms"] = Form.objects.all()
             context["processes"] = Process.objects.all()
         else:
@@ -54,7 +54,7 @@ class ReportFormView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["responses"] = Response.objects.filter(form=self.get_object())
+        context["responses"] = FormResponse.objects.filter(form=self.get_object())
         return context
 
 
@@ -69,5 +69,5 @@ class ReportProcessView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["responses"] = Response.objects.filter(process=self.get_object())
+        context["responses"] = ProcessResponse.objects.filter(process=self.get_object())
         return context

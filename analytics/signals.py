@@ -9,7 +9,7 @@ from django.dispatch import receiver
 
 from analytics.constants import CREATE, LOGIN, LOGIN_FAILED, READ, SUCCESS
 from analytics.models.activities import UserActivity
-from surveys.models import Form, Process, Response
+from surveys.models import Form, Process, FormResponse, ProcessResponse
 from utils.client_ip_service import get_client_ip
 
 
@@ -53,21 +53,38 @@ def sync_report_details(sender, instance, **kwrgs):
 
     #   check if any response hase been created
     #   if yes ==> update our responses in report channel layer
-    if successful and (instance.action_type == CREATE) and (model_class is Response):
-        response = Response.objects.get(instance.object_id)
-        response_count = response.process.response_count
+    if successful and (instance.action_type == CREATE) and (model_class is FormResponse):
+        form_response = FormResponse.objects.get(instance.object_id)
+        response_count = form_response.form.response_count
 
         #   async send response_count report
         #   connected to ReportConsumer on_response_count
         async_to_sync(channel_layer.group_send)(
-            f"{model_name}_{instance.object_id}",  #   channel_group_name
+            f"form_{form_response.form.id}",  #   channel_group_name
             {"type": "on.reponse_count", "response_count": response_count},
         )
 
         #   async send response to report
         #   connected to ReportConsumer on_response
         async_to_sync(channel_layer.group_send)(
-            f"{model_name}_{instance.object_id}",  #   channel_group_name
-            {"type": "on.reponse", "response": json.dumps(response)},
+            f"form_{form_response.form.pk}",  #   channel_group_name
+            {"type": "on.reponse", "response": json.dumps(form_response)},
         )
         
+    if successful and (instance.action_type == CREATE) and (model_class is ProcessResponse):
+        process_response = ProcessResponse.objects.get(instance.object_id)
+        response_count = process_response.process.response_count
+
+        #   async send response_count report
+        #   connected to ReportConsumer on_response_count
+        async_to_sync(channel_layer.group_send)(
+            f"process_{process_response.process.pk}",  #   channel_group_name
+            {"type": "on.reponse_count", "response_count": response_count},
+        )
+
+        #   async send response to report
+        #   connected to ReportConsumer on_response
+        async_to_sync(channel_layer.group_send)(
+            f"process_{form_response.form.id}",  #   channel_group_name
+            {"type": "on.reponse", "response": json.dumps(process_response)},
+        )
