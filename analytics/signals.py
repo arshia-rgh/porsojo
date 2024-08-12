@@ -30,6 +30,7 @@ def sync_report_details(sender, instance, **kwrgs):
     """
     Use django channels to sync all of our reports details.
     """
+    #   we don't want any update on views for activities without any content.
     if type(instance.content_type) is NoneType:
         return
 
@@ -56,27 +57,17 @@ def sync_report_details(sender, instance, **kwrgs):
         response = Response.objects.get(instance.object_id)
         response_count = response.process.response_count
 
-        #   async send response_count to its form and process reports
-        #   connected to ReportFormConsumer on_response_count
+        #   async send response_count report
+        #   connected to ReportConsumer on_response_count
         async_to_sync(channel_layer.group_send)(
-            f"form_{response.form.id}",  #   channel_group_name
+            f"{model_name}_{instance.object_id}",  #   channel_group_name
             {"type": "on.reponse_count", "response_count": response_count},
         )
 
-        #   connected to ReportProcessConsumer on_response_count
+        #   async send response to report
+        #   connected to ReportConsumer on_response
         async_to_sync(channel_layer.group_send)(
-            f"process_{response.form.id}",  #   channel_group_name
-            {"type": "on.reponse_count", "response_count": response_count},
-        )
-
-        #   async send response to its form and process reporta
-        #   connected to ReportFormConsumer on_response
-        async_to_sync(channel_layer.group_send)(
-            f"form_{response.form.id}",  #   channel_group_name
+            f"{model_name}_{instance.object_id}",  #   channel_group_name
             {"type": "on.reponse", "response": json.dumps(response)},
         )
-        #   connected to ReportProcessConsumer on_response
-        async_to_sync(channel_layer.group_send)(
-            f"process_{response.process.id}",  #   channel_group_name
-            {"type": "on.reponse", "response": json.dumps(response)},
-        )
+        
