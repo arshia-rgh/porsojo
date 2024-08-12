@@ -43,17 +43,6 @@ class ProcessSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class ResponseSerializer(serializers.ModelSerializer):
-    """
-    a serializer class for `Response` model.
-    """
-
-    class Meta:
-        model = Response
-        fields = "__all__"
-        read_only_fields = ["user"]
-
-
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
