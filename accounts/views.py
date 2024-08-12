@@ -28,6 +28,7 @@ class UserRegisterView(generics.CreateAPIView):
 
     serializer_class = UserRegistrationSerializer
     permission_classes = (AllowAny,)
+    authentication_classes = ()
 
 
 class SendOtpTokenView(generics.GenericAPIView):
@@ -39,6 +40,7 @@ class SendOtpTokenView(generics.GenericAPIView):
 
     serializer_class = IranianPhoneNumberSerializer
     permission_classes = (AllowAny,)
+    authentication_classes = ()
 
     def post(self, request: Request, *args, **kwargs) -> Response:
         """
@@ -68,6 +70,7 @@ class VerifyOtpTokenView(generics.GenericAPIView):
 
     serializer_class = VerifyOtpTokenSerializer
     permission_classes = (AllowAny,)
+    authentication_classes = ()
 
     def post(self, request: Request, *args, **kwargs) -> Response:
         """
