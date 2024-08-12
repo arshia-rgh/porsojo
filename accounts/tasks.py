@@ -1,10 +1,13 @@
 from celery import shared_task
 from django.conf import settings
-from django.urls import reverse
-from accounts.models.otp_token import OtpToken
-from utils.otp_service import BaseOtpService, FakeOtpService, KavenegarOtpService
 from django.core.mail import send_mail
-from utils.email_verification_uid import generate_email_verification_token, generate_uid
+from django.urls import reverse
+
+from accounts.models.otp_token import OtpToken
+from utils.email_verification_uid import (generate_email_verification_token,
+                                          generate_uid)
+from utils.otp_service import (BaseOtpService, FakeOtpService,
+                               KavenegarOtpService)
 
 
 def get_otp_service() -> BaseOtpService:
@@ -61,7 +64,7 @@ def send_verification_email(user_id, email):
     uid = generate_uid(user)
     # uidb64 and token will be sent as dynamic parts of the URL
     verification_link = (
-        f"{settings.FRONTEND_URL}{reverse("accounts:verify_email", kwargs={'uidb64': uid, 'token': token})}"
+        f"{settings.FRONTEND_URL}{reverse('accounts:verify_email', kwargs={'uidb64': uid, 'token': token})}"
     )
 
     subject = "Verify your email address"

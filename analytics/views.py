@@ -71,4 +71,3 @@ class ReportProcessView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["responses"] = Response.objects.filter(process=self.get_object())
         return context
-    
