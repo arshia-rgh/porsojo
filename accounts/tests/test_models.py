@@ -32,3 +32,8 @@ class TestUserModel:
         user.delete()
         with pytest.raises(User.DoesNotExist):
             User.objects.get(id=user_id)
+
+
+@pytest.mark.django_db
+class TestOTPToken:
+    pass
