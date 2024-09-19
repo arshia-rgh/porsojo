@@ -1,5 +1,7 @@
 import pytest
+from accounts.models.otp_token import OtpToken
 from accounts.models.user import User
+from django.utils import timezone
 
 
 @pytest.mark.django_db
@@ -36,4 +38,34 @@ class TestUserModel:
 
 @pytest.mark.django_db
 class TestOTPToken:
-    pass
+    def test_create_new_code(self):
+        token = OtpToken.objects.create(phone_number="09121101111", code=OtpToken.generate_code())
+        assert OtpToken.objects.all().count() == 1
+
+    def test_retrieve_token_by_phone_number(self):
+        token = OtpToken.objects.create(phone_number="09121101111", code=OtpToken.generate_code())
+        retrieved_token = OtpToken.objects.get(phone_number="09121101111")
+        assert retrieved_token.code == token.code
+
+    def test_update_token(self):
+        token = OtpToken.objects.create(phone_number="09121101111", code=OtpToken.generate_code())
+        new_code = OtpToken.generate_code()
+        token.code = new_code
+        token.save()
+        updated_token = OtpToken.objects.get(phone_number="09121101111")
+        assert updated_token.code == new_code
+
+    def test_delete_token(self):
+        token = OtpToken.objects.create(phone_number="09121101111", code=OtpToken.generate_code())
+        token_id = token.id
+        token.delete()
+        with pytest.raises(OtpToken.DoesNotExist):
+            OtpToken.objects.get(id=token_id)
+
+    def test_token_expiry(self):
+        ten_minutes_before = timezone.now() - timezone.timedelta(minutes=10)
+        token = OtpToken.objects.create(phone_number="09121101111", code=OtpToken.generate_code())
+
+        token.created = ten_minutes_before
+        token.save()
+        assert token.is_expire == True
