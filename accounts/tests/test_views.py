@@ -18,4 +18,10 @@ class TestUserRegister:
 
         assert User.objects.get(email="test@gmazil.com").is_email_verified == False
 
-        mock_send_verification_email.assert_called_once_with(User.objects.get(email="test@gmazil.com").id, User.objects.get(email="test@gmazil.com").email)
+        mock_send_verification_email.assert_called_once_with(User.objects.get(email="test@gmazil.com").id,
+                                                             User.objects.get(email="test@gmazil.com").email)
+
+    def test_register_missing_fields(self, api_client):
+        response = api_client.post(reverse("accounts:register"), data={"username": "test"})
+
+        assert response.status_code == 400
