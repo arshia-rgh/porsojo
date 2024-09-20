@@ -1,7 +1,8 @@
+from unittest.mock import patch
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from unittest.mock import patch
 
 User = get_user_model()
 
@@ -42,4 +43,12 @@ class TestUserRegister:
 
 @pytest.mark.django_db
 class TestSendOTPToken:
-    pass
+
+    @patch("accounts.views.send_otp.delay")
+    def test_send_successfully(self, mock_send_otp, api_client, test_user):
+        response = api_client.post(reverse("accounts:send_otp_token"), data={"phone_number": test_user.phone_number})
+
+        assert response.status_code == 201
+        assert response.data["message"] == "OTP sent successfully"
+
+        mock_send_otp.assert_called_once_with(test_user.phone_number)
