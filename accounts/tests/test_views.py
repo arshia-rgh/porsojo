@@ -82,3 +82,4 @@ class TestVerifyOTPToken:
 
         assert "refresh" in response.data
         assert "access" in response.data
+        assert test_user.is_authenticated == True
