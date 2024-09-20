@@ -70,3 +70,8 @@ class TestSendOTPToken:
         response = api_client.post(reverse("accounts:send_otp_token"), data={"phone_number": test_user.phone_number})
 
         assert response.status_code == 400
+
+
+@pytest.mark.django_db
+class TestVerifyOTPToken:
+    pass
