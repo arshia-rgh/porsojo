@@ -52,3 +52,8 @@ class TestSendOTPToken:
         assert response.data["message"] == "OTP sent successfully"
 
         mock_send_otp.assert_called_once_with(test_user.phone_number)
+
+    def test_send_without_phone_number_exists(self, api_client):
+        response = api_client.post(reverse("accounts:send_otp_token"), data={"phone_number": "09122222222"})
+
+        assert response.status_code == 400
