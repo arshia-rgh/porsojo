@@ -25,3 +25,16 @@ class TestUserRegister:
         response = api_client.post(reverse("accounts:register"), data={"username": "test"})
 
         assert response.status_code == 400
+
+    def test_register_user_existing_email(self, api_client):
+        User.objects.create_user(username="existing", password="test pass", email="existing@gmazil.com")
+        response = api_client.post(reverse("accounts:register"),
+                                   data={"username": "test", "password": "test pass", "email": "existing@gmazil.com"})
+
+        assert response.status_code == 400
+
+    def test_register_user_invalid_email(self, api_client):
+        response = api_client.post(reverse("accounts:register"),
+                                   data={"username": "test", "password": "test pass", "email": "invalid-email"})
+
+        assert response.status_code == 400
