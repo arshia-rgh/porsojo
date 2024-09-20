@@ -24,4 +24,4 @@ def test_user():
 
 @pytest.fixture
 def test_otp_token(test_user):
-    return OtpToken.objects.create(phone_number=test_user.phone_number)
+    return OtpToken.objects.create(phone_number=test_user.phone_number, code=OtpToken.generate_code())

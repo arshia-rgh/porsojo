@@ -74,4 +74,11 @@ class TestSendOTPToken:
 
 @pytest.mark.django_db
 class TestVerifyOTPToken:
-    pass
+    def test_verify_successfully(self, api_client, test_user, test_otp_token):
+
+        response = api_client.post(reverse("accounts:verify_otp_token"), data={"phone_number": test_user.phone_number, "otp_token": test_otp_token.code})
+
+        assert response.status_code == 200
+
+        assert "refresh" in response.data
+        assert "access" in response.data
