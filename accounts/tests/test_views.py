@@ -38,3 +38,8 @@ class TestUserRegister:
                                    data={"username": "test", "password": "test pass", "email": "invalid-email"})
 
         assert response.status_code == 400
+
+
+@pytest.mark.django_db
+class TestSendOTPToken:
+    pass
