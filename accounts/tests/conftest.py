@@ -2,6 +2,8 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
+from accounts.models.otp_token import OtpToken
+
 User = get_user_model()
 
 
@@ -18,3 +20,8 @@ def test_user():
         phone_number="09111111111",
         email="test@gmail.com",
     )
+
+
+@pytest.fixture
+def test_otp_token(test_user):
+    return OtpToken.objects.create(phone_number=test_user.phone_number)
