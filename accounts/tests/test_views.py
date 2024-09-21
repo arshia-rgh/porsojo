@@ -140,3 +140,8 @@ class TestChangePassword:
         assert response.status_code == 200
         assert test_user.check_password("Password12") == True
 
+    def test_change_password_unauthenticated(self, api_client):
+
+        response = api_client.patch(reverse("accounts:change_password"))
+
+        assert response.status_code == 401
