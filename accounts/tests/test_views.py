@@ -89,3 +89,8 @@ class TestVerifyOTPToken:
                                    data={"phone_number": "invalid phone", "otp_token": "invalid token"})
 
         assert response.status_code == 400
+
+
+@pytest.mark.django_db
+class TestProfileRetrieveUpdate:
+    pass
