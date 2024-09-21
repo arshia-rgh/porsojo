@@ -150,3 +150,35 @@ class TestChangePassword:
         response = api_client.patch(reverse("accounts:change_password"))
 
         assert response.status_code == 401
+
+    def test_change_password_wrong_data(self, api_client, test_user):
+        api_client.force_authenticate(test_user)
+
+        assert test_user.check_password("test pass") == True
+
+        # Wrong old password
+        response_wrong_old_password = api_client.patch(
+            reverse("accounts:change_password"),
+            data={
+                "old_password": "invalid",
+                "password": "Pass12",
+                "confirm_password": "Pass12"
+            }
+        )
+
+        assert response_wrong_old_password.status_code == 400
+        assert test_user.check_password("test pass") == True
+
+
+        # New passwords mismatched
+        response_mismatch = api_client.patch(
+            reverse("accounts:change_password"),
+            data={
+                "old_password": "test pass",
+                "password": "Pass12",
+                "confirm_password": "another pass"
+            }
+        )
+
+        assert response_mismatch.status_code == 400
+        assert test_user.check_password("test pass") == True
