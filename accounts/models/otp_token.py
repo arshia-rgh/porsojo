@@ -28,7 +28,7 @@ class OtpToken(models.Model):
         validators=[iranian_phone_number_validator],
     )
     code = models.PositiveSmallIntegerField(_("code"))
-    created = models.DateTimeField(_("created"), auto_now=True)
+    created = models.DateTimeField(_("created"), auto_now_add=True)
 
     def __str__(self):
         return f"{self.phone_number} - {self.code} - {self.created}"
