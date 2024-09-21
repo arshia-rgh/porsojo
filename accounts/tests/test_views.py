@@ -112,3 +112,9 @@ class TestProfileRetrieveUpdate:
 
         assert test_user.username == "test"
         assert response.status_code == 200
+
+    def test_access_view_unauthorized_user(self, api_client):
+
+        response = api_client.get(reverse("accounts:profile"))
+
+        assert response.status_code == 401
