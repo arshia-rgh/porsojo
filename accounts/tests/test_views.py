@@ -124,3 +124,8 @@ class TestProfileRetrieveUpdate:
         response = api_client.patch(reverse("accounts:profile"), data={"email": "invalid-email"})
 
         assert response.status_code == 400
+
+
+@pytest.mark.django_db
+class TestChangePassword:
+    pass
