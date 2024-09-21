@@ -93,4 +93,12 @@ class TestVerifyOTPToken:
 
 @pytest.mark.django_db
 class TestProfileRetrieveUpdate:
-    pass
+
+    def test_retrieve_profile_data_successfully(self, api_client, test_user):
+        api_client.force_authenticate(test_user)
+
+        response = api_client.get(reverse("accounts:profile"))
+
+        assert response.status_code == 200
+
+        assert "id" and "username" and "first_name" and "last_name" and "phone_number" and "email" in response.data
