@@ -102,3 +102,13 @@ class TestProfileRetrieveUpdate:
         assert response.status_code == 200
 
         assert "id" and "username" and "first_name" and "last_name" and "phone_number" and "email" in response.data
+
+    def test_update_profile_successfully(self, api_client, test_user):
+        api_client.force_authenticate(test_user)
+
+        assert test_user.username == "test user"
+
+        response = api_client.patch(reverse("accounts:profile"), data={"username": "test"})
+
+        assert test_user.username == "test"
+        assert response.status_code == 200
