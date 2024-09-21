@@ -211,3 +211,13 @@ class TestVerifyEmailView:
         test_user.refresh_from_db()
         assert test_user.is_email_verified == False
 
+    def test_verify_invalid_token(self, api_client, test_user, uid_token_setup):
+        uid, _ = uid_token_setup
+        token = "invalid token"
+        assert test_user.is_email_verified == False
+
+        response = api_client.get(reverse("accounts:verify_email", kwargs={"uidb64": uid, "token": token}))
+
+        assert response.status_code == 400
+        test_user.refresh_from_db()
+        assert test_user.is_email_verified == False
