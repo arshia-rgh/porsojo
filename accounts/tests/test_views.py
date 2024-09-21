@@ -130,18 +130,23 @@ class TestProfileRetrieveUpdate:
 class TestChangePassword:
 
     def test_change_password_successfully(self, api_client, test_user):
-
         api_client.force_authenticate(test_user)
 
         assert test_user.check_password("test pass") == True
 
-        response = api_client.patch(reverse("accounts:change_password"), data={"old_password": "test pass", "password": "Password12", "confirm_password": "Password12"})
+        response = api_client.patch(
+            reverse("accounts:change_password"),
+            data={
+                "old_password": "test pass",
+                "password": "Password12",
+                "confirm_password": "Password12",
+            }
+        )
 
         assert response.status_code == 200
         assert test_user.check_password("Password12") == True
 
     def test_change_password_unauthenticated(self, api_client):
-
         response = api_client.patch(reverse("accounts:change_password"))
 
         assert response.status_code == 401
