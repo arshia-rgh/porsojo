@@ -197,3 +197,17 @@ class TestVerifyEmailView:
         test_user.refresh_from_db()
         assert test_user.is_email_verified == True
 
+    def test_verify_nonexistent_id(self, api_client, test_user, uid_token_setup):
+        uid, token = uid_token_setup
+
+        uid = "invalid uid"
+
+        assert test_user.is_email_verified == False
+
+        response = api_client.get(reverse("accounts:verify_email", kwargs={"uidb64": uid, "token": token}))
+
+        assert response.status_code == 400
+
+        test_user.refresh_from_db()
+        assert test_user.is_email_verified == False
+
