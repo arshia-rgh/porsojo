@@ -169,7 +169,6 @@ class TestChangePassword:
         assert response_wrong_old_password.status_code == 400
         assert test_user.check_password("test pass") == True
 
-
         # New passwords mismatched
         response_mismatch = api_client.patch(
             reverse("accounts:change_password"),
@@ -182,3 +181,8 @@ class TestChangePassword:
 
         assert response_mismatch.status_code == 400
         assert test_user.check_password("test pass") == True
+
+
+@pytest.mark.django_db
+class TestVerifyEmailView:
+    pass
