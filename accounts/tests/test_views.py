@@ -114,7 +114,13 @@ class TestProfileRetrieveUpdate:
         assert response.status_code == 200
 
     def test_access_view_unauthorized_user(self, api_client):
-
         response = api_client.get(reverse("accounts:profile"))
 
         assert response.status_code == 401
+
+    def test_update_profile_invalid_data(self, api_client, test_user):
+        api_client.force_authenticate(test_user)
+
+        response = api_client.patch(reverse("accounts:profile"), data={"email": "invalid-email"})
+
+        assert response.status_code == 400
